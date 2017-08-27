@@ -1,0 +1,11 @@
+GW2Bot/cogs/__pycache__/*
+GW2Bot/utils/__pycache__/*
+GW2Bot/data/guildwars2/build.json
+GW2Bot/data/guildwars2/cache.json
+GW2Bot/data/red/*
+GW2Bot/lib
+
+start_red_autorestart.bat
+start_red_autorestart.sh
+start_red.bat
+start_red.sh
