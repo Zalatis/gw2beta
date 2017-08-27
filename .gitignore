@@ -1,5 +1,5 @@
 GW2Bot/cogs/__pycache__/*
-GW2Bot/utils/__pycache__/*
+GW2Bot/cogs/utils/__pycache__/*
 GW2Bot/data/guildwars2/build.json
 GW2Bot/data/guildwars2/cache.json
 GW2Bot/data/red/*
