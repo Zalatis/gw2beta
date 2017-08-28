@@ -156,12 +156,12 @@ class EventMaker():
                           self.bot.get_all_members(),
                           id=new_event["creator"]))
         emb.set_footer(
-            text="Créé le (GMT+2) " + get_datetime_timezoned_from_timestamp(new_event["create_time"]).strftime("%d-%m-%Y %H:%M:%S")
+            text="Créé le (GMT+2) " + format_datetime(get_datetime_timezoned_from_timestamp(new_event["create_time"]))
         )
         emb.add_field(name="Event ID", value=str(new_event["id"]))
         emb.add_field(
             name="Début de l'event (GMT+2)",
-            value=get_datetime_timezoned_from_timestamp(new_event["event_start_time"])
+            value=format_datetime(get_datetime_timezoned_from_timestamp(new_event["event_start_time"]))
         )
         await self.bot.say(embed=emb)
 
@@ -210,25 +210,34 @@ class EventMaker():
         """Liste des événements pour ce serveur qui n'ont pas encore commencé"""
         server = ctx.message.server
         events = []
-        for event in self.events[server.id]:
+        for idx, event in enumerate(self.events[server.id]):
             if not event["has_started"]:
-                emb = discord.Embed(title=event["event_name"],
-                                    description=event["description"],
-                                    url="https://time.is/et/Paris")
-                emb.add_field(name="Créer par",
-                              value=discord.utils.get(
-                                  self.bot.get_all_members(),
-                                  id=event["creator"]))
+                start_time = get_datetime_timezoned_from_timestamp(event["event_start_time"])
+                emb = discord.Embed(
+                    title=event["event_name"],
+                    description=event["description"],
+                    url="https://www.timeanddate.com/countdown/generic?iso={0}&msg={1}".format(start_time.strftime("%Y%m%dT%H%M%S"), event["event_name"])
+                )
+                emb.add_field(
+                    name="Créer par",
+                    value=discord.utils.get(self.bot.get_all_members(), id=event["creator"])
+                )
                 emb.set_footer(
-                    text="Créé le (GMT+2) " + get_datetime_timezoned_from_timestamp(
-                        event["create_time"]).strftime("%d-%m-%Y %H:%M:%S"))
+                    text="Créé le (GMT+2) {0} {1}/{2}".format(
+                        format_datetime(get_datetime_timezoned_from_timestamp(event["create_time"])),
+                        (idx + 1),
+                        len(self.events[server.id])
+                    )
+                )
                 emb.add_field(name="Event ID", value=str(event["id"]))
                 emb.add_field(
-                    name="Participant count", value=str(
-                        len(event["participants"])))
+                    name="Participant count",
+                    value=str(len(event["participants"]))
+                )
                 emb.add_field(
-                    name="Heure de début (GMT+2)", value=get_datetime_timezoned_from_timestamp(
-                        event["event_start_time"]))
+                    name="Heure de début (GMT+2)",
+                    value=format_datetime(start_time)
+                )
                 events.append(emb)
         if len(events) == 0:
             await self.bot.say("Aucun événement disponible!")
@@ -372,9 +381,9 @@ class EventMaker():
                                           id=event["creator"]))
                         emb.set_footer(
                             text="Créé le (GMT+2) " +
-                            get_datetime_timezoned_from_timestamp(
-                                event["create_time"]).strftime(
-                                    "%d-%m-%Y %H:%M:%S"))
+                            format_datetime(get_datetime_timezoned_from_timestamp(
+                                event["create_time"]))
+                        )
                         emb.add_field(name="Event ID", value=str(event["id"]))
                         emb.add_field(
                             name="Nombre de participants", value=str(
@@ -430,6 +439,9 @@ class EventMaker():
         dataIO.save_json(os.path.join("data", "eventmaker", "events.json"), self.events)
         dataIO.save_json(os.path.join("data", "eventmaker", "settings.json"), self.settings)
 
+
+def format_datetime(datetime):
+    return datetime.strftime("%d/%m/%Y à %H:%M")
 
 def check_folder():
     if not os.path.isdir(os.path.join("data", "eventmaker")):
