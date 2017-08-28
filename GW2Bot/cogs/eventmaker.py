@@ -227,13 +227,8 @@ class EventMaker():
                     name="Participant count", value=str(
                         len(event["participants"])))
                 emb.add_field(
-<<<<<<< HEAD
                     name="Heure de début (GMT+2)", value=get_datetime_timezoned_from_timestamp(
                         event["event_start_time"]))
-=======
-                    name="Heure de début (GMT+2)", value=dt.utcfromtimestamp(
-                        event["event_start_time"]).strftime("%d-%m-%Y %H:%M:%S"))
->>>>>>> ef4fff69654997abf8f3cf49a36fdeb8d7b759b0
                 events.append(emb)
         if len(events) == 0:
             await self.bot.say("Aucun événement disponible!")
