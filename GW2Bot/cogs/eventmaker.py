@@ -155,7 +155,7 @@ class EventMaker():
         emb.add_field(name="Event ID", value=str(new_event["id"]))
         emb.add_field(
             name="Début de l'event (GMT+2)", value=dt.utcfromtimestamp(
-                new_event["event_start_time"]))
+                new_event["event_start_time"]).strftime("%d-%m-%Y %H:%M:%S"))
         await self.bot.say(embed=emb)
 
     @commands.command(pass_context=True)
@@ -221,7 +221,7 @@ class EventMaker():
                         len(event["participants"])))
                 emb.add_field(
                     name="Heure de début (GMT+2)", value=dt.utcfromtimestamp(
-                        event["event_start_time"]))
+                        event["event_start_time"]).strftime("%d-%m-%Y %H:%M:%S"))
                 events.append(emb)
         if len(events) == 0:
             await self.bot.say("Aucun événement disponible!")
