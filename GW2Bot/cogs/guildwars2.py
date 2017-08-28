@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
 from .utils import checks
+from .utils.timezone import get_datetime_timezoned
+from .utils.timezone import get_localized_datetime
+
 from cogs.utils.dataIO import dataIO
 
 import os
@@ -1750,7 +1753,7 @@ class GuildWars2:
                                 "`{1}`".format(user, e))
             return
         buyprice = results["buys"]["unit_price"]
-        sellprice = results ["sells"]["unit_price"] 
+        sellprice = results ["sells"]["unit_price"]
         itemname = choice["name"]
         level = str(choice["level"])
         rarity = choice["rarity"]
@@ -1763,7 +1766,7 @@ class GuildWars2:
         if buyprice == 0:
             buyprice = 'Pas d\'acheteurs'
         if sellprice == 0:
-            sellprice = 'Pas de vendeurs'                
+            sellprice = 'Pas de vendeurs'
         data = discord.Embed(title=itemname, description=description, colour=self.rarity_to_color(rarity))
         if "icon" in choice:
             data.set_thumbnail(url=choice["icon"])
@@ -1775,7 +1778,7 @@ class GuildWars2:
         except discord.HTTPException:
             await self.bot.say("Problème d'intégration des données sur discord")
 
-    async def itemname_to_id(self, item, user):        
+    async def itemname_to_id(self, item, user):
         item_sanitized = re.escape(item)
         search = re.compile(item_sanitized + ".*", re.IGNORECASE)
         cursor = self.db.items.find({"name": search})
@@ -1799,7 +1802,7 @@ class GuildWars2:
             try:
                 num = int(answer.content)
                 choice = items[num]
-            except: 
+            except:
                 await self.bot.edit_message(message, "Ce n'est pas un numéro dans la liste")
                 return None
             try:
@@ -1998,11 +2001,11 @@ class GuildWars2:
     async def prefix(self, ctx, *prefixes):
         """Définit les préfixes de bot pour ce serveur
 
-        Accepte plusieurs préfixes séparés par un espace. Entrez deux guillemets 
+        Accepte plusieurs préfixes séparés par un espace. Entrez deux guillemets
 		si un préfixe contient des espaces.
         Exemple: prefix ! $ ? "deux mots"
 
-        L'émission de cette commande sans paramètres permet de 
+        L'émission de cette commande sans paramètres permet de
 		réinitialiser le préfixe le serveur
         """
         server = ctx.message.server
@@ -2346,10 +2349,10 @@ class GuildWars2:
         except:
             color = discord.Embed.Empty
         return color
-		
+
     def rarity_to_color(self, rarity):
         return int(self.gamedata["items"]["rarity_colors"][rarity], 0)
-		
+
     async def get_channels(self):
         try:
             channels = []
@@ -2428,7 +2431,9 @@ class GuildWars2:
                 boss_time = datetime.datetime.strptime(boss["time"], "%H:%M:%S")
                 boss_time = boss_time.replace(year=time.year, month=time.month, day=time.day) + datetime.timedelta(days=day)
                 if time < boss_time:
-                    output = {"name" : boss["name"], "time" : str(boss_time.time()), "waypoint" : boss["waypoint"], "diff" : self.format_timedelta((boss_time - time))}
+                    delta = (boss_time - time)
+                    boss_time = get_datetime_timezoned(boss_time)
+                    output = {"name" : boss["name"], "time" : str(boss_time.time()), "waypoint" : boss["waypoint"], "diff" : self.format_timedelta(delta)}
                     upcoming_bosses.append(output)
                     counter +=1
             day += 1
@@ -2441,7 +2446,7 @@ class GuildWars2:
             value = "Time: {}\nWaypoint: {}".format(boss["time"], boss["waypoint"])
             data.add_field(name="{} in {}".format(boss["name"], boss["diff"]), value=value, inline=False)
         data.set_author(name="World boss à venir")
-        data.set_footer(text="Les heures sont en UTC, vous devez donc rajoutez 2 heures pour l'heure française")
+        data.set_footer(text="Les heures sont en GMT + 2 [Europe/Paris]")
         return data
 
 

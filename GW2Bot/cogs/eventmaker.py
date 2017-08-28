@@ -1,6 +1,7 @@
 from discord.ext import commands
 from .utils import checks
 from .utils.dataIO import dataIO
+from .utils.timezone import get_datetime_timezoned_from_timestamp
 from datetime import datetime as dt
 import asyncio
 import aiohttp
@@ -18,7 +19,7 @@ numbs = {
 
 
 class EventMaker():
-    """Cog pour créer des events planifiés 
+    """Cog pour créer des events planifiés
     dans le channel par défaut"""
     def __init__(self, bot):
         self.bot = bot
@@ -78,6 +79,11 @@ class EventMaker():
         """
         author = ctx.message.author
         server = ctx.message.server
+
+        if server is None:
+            await self.bot.say("Vous devez être sur un serveur pour créer un événement.")
+            return
+
         allowed_roles = []
         server_owner = server.owner
         if server.id in self.settings:
@@ -92,9 +98,9 @@ class EventMaker():
             for role in author.roles:
                 if role in allowed_roles:
                     break
-            else:
-                await self.bot.say("Vous n'avez pas la permission de créer des événements!")
-                return
+                else:
+                    await self.bot.say("Vous n'avez pas la permission de créer des événements!")
+                    return
 
         creation_time = dt.utcnow()
         await self.bot.say("Entrez un nom pour l'événement:")
@@ -150,12 +156,13 @@ class EventMaker():
                           self.bot.get_all_members(),
                           id=new_event["creator"]))
         emb.set_footer(
-            text="Créer le (GMT+2) " + dt.utcfromtimestamp(
-                new_event["create_time"]).strftime("%d-%m-%Y %H:%M:%S"))
+            text="Créé le (GMT+2) " + get_datetime_timezoned_from_timestamp(new_event["create_time"]).strftime("%d-%m-%Y %H:%M:%S")
+        )
         emb.add_field(name="Event ID", value=str(new_event["id"]))
         emb.add_field(
-            name="Début de l'event (GMT+2)", value=dt.utcfromtimestamp(
-                new_event["event_start_time"]))
+            name="Début de l'event (GMT+2)",
+            value=get_datetime_timezoned_from_timestamp(new_event["event_start_time"])
+        )
         await self.bot.say(embed=emb)
 
     @commands.command(pass_context=True)
@@ -213,14 +220,14 @@ class EventMaker():
                                   self.bot.get_all_members(),
                                   id=event["creator"]))
                 emb.set_footer(
-                    text="Créé le (GMT+2) " + dt.utcfromtimestamp(
+                    text="Créé le (GMT+2) " + get_datetime_timezoned_from_timestamp(
                         event["create_time"]).strftime("%d-%m-%Y %H:%M:%S"))
                 emb.add_field(name="Event ID", value=str(event["id"]))
                 emb.add_field(
                     name="Participant count", value=str(
                         len(event["participants"])))
                 emb.add_field(
-                    name="Heure de début (GMT+2)", value=dt.utcfromtimestamp(
+                    name="Heure de début (GMT+2)", value=get_datetime_timezoned_from_timestamp(
                         event["event_start_time"]))
                 events.append(emb)
         if len(events) == 0:
@@ -313,8 +320,8 @@ class EventMaker():
     @eventset.command(pass_context=True, name="channel")
     @checks.admin_or_permissions(manage_server=True)
     async def eventset_channel(self, ctx, channel: discord.Channel):
-        """Réglez le canal utilisé pour afficher les rappels. 
-        Si 'canal' est sélectionné pour les rappels sur la 
+        """Réglez le canal utilisé pour afficher les rappels.
+        Si 'canal' est sélectionné pour les rappels sur la
         création de l'event, ce canal
         Par défaut: le canal par défaut du serveur"""
         server = ctx.message.server
@@ -326,7 +333,7 @@ class EventMaker():
     @eventset.command(pass_context=True, name="role")
     @checks.admin_or_permissions(manage_server=True)
     async def eventset_role(self, ctx, *, role: str=None):
-        """Définissez le rôle permettant de créer des événements. 
+        """Définissez le rôle permettant de créer des événements.
         Par Défaut : Tout le monde peut en créer."""
         server = ctx.message.server
         if role is not None:
@@ -365,7 +372,7 @@ class EventMaker():
                                           id=event["creator"]))
                         emb.set_footer(
                             text="Créé le (GMT+2) " +
-                            dt.utcfromtimestamp(
+                            get_datetime_timezoned_from_timestamp(
                                 event["create_time"]).strftime(
                                     "%d-%m-%Y %H:%M:%S"))
                         emb.add_field(name="Event ID", value=str(event["id"]))
