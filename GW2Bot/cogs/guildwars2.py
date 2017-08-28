@@ -2440,8 +2440,8 @@ class GuildWars2:
         for boss in schedule:
             value = "Time: {}\nWaypoint: {}".format(boss["time"], boss["waypoint"])
             data.add_field(name="{} in {}".format(boss["name"], boss["diff"]), value=value, inline=False)
-        data.set_author(name="Upcoming world bosses")
-        data.set_footer(text="All times are for UTC. Timezone support coming soon™")
+        data.set_author(name="World boss à venir")
+        data.set_footer(text="Les heures sont en UTC, vous devez donc rajoutez 2 heures pour l'heure française")
         return data
 
 
@@ -2449,7 +2449,7 @@ class GuildWars2:
         hours, remainder = divmod(td.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
         if hours:
-            return "{} hours and {} minutes".format(hours, minutes)
+            return "{} heures et {} minutes".format(hours, minutes)
         else:
             return "{} minutes".format(minutes)
 
