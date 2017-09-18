@@ -55,7 +55,7 @@ pacific = pytz.timezone('US/Pacific')
 class Eventmaker():
     """Est un tool pour créer des évènements pour
     des jeux en ligne et ainsi facilité les rappels
-    lors d'un évènement important en fonction des goûts de 
+    lors d'un évènement important en fonction des goûts de
     chacun. Seuls les modos, admins et propriétaire du serveur
     en question peuvent en créer les rappels ce font de base
     dans le canal par défaut du serveur ainsi qu'en message
@@ -394,7 +394,7 @@ class Eventmaker():
                     else:
                         await self.bot.say("Vous avez déjà rejoint cet évènement!")
                 else:
-                    await self.bot.say("That event has already started!")
+                    await self.bot.say("Cet évènement a déjà commencé!")
                 break
         else:
             await self.bot.say("Il semblerait que cet évènement n'existe pas!" +
@@ -568,7 +568,7 @@ class Eventmaker():
     @event_setup.command(pass_context=True, name="channel")
     @checks.admin_or_permissions(manage_server=True)
     async def event_setup_channel(self, ctx, channel: discord.Channel):
-        """Définissez le canal utilisé pour afficher des rappels. Si un canal 
+        """Définissez le canal utilisé pour afficher des rappels. Si un canal
         est sélectionné pour les rappels lors de la création de l'évènement,
         ce canal sera utilisé. Sinon ce sera le canal par défaut du serveur"""
         server = ctx.message.server
@@ -688,8 +688,8 @@ class Eventmaker():
         dataIO.save_json(os.path.join("data", "eventmaker", "settings.json"), self.settings)
 
     async def confirm_server_setup(self):
-        """Assure que tous les serveurs dans lesquels le robot est 
-        installé ont des paramètres par défaut pour eux. Fonctionne 
+        """Assure que tous les serveurs dans lesquels le robot est
+        installé ont des paramètres par défaut pour eux. Fonctionne
         uniquement avec le cog chargé"""
         for server in list(self.bot.servers):
             if server.id not in self.settings:
