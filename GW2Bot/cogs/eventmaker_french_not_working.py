@@ -347,13 +347,13 @@ class Eventmaker():
         #               value=author.name)
         emb.set_footer(
             text="Créé: " + dt.fromtimestamp(
-                new_event["create_time"], central).strftime("%d/%m/%Y %H:%M %Z ") +
+                new_event["create_time"], central).strftime("%d/%m/%Y à %H:%M (%Z) ") +
                         "par " + author.name)
         emb.add_field(
             name="Activité: ", value=new_event["activity"])
         emb.add_field(
             name="Date de début: ", value=dt.fromtimestamp(
-                new_event["event_start_time"], central).strftime("%H:%M %d/%m %Z  "))
+                new_event["event_start_time"], central).strftime("%d/%m/%Y à %H:%M (%Z)  "))
         emb.add_field(name="ID", value=str(new_event["id"]))
         await self.bot.say(embed=emb)
 
@@ -530,14 +530,11 @@ class Eventmaker():
         """Gère le temps"""
         # start_time = calendar.timegm(cur_time.utctimetuple())
         content = msg.content
-        # CDT = timezone(timedelta(hours=-5))
+        # GMT+2 = timezone(timedelta(hours=+2))
         try:
-            t, ampm, tzone, d = content.split(" ")
+            t, tzone, d = content.split(" ")
             hour, minute = t.split(":")
-            month, day = d.split("/")
-            # AM ou PM
-            if ampm.lower() == "pm":
-                hour = int(hour) + 12
+            day, month = d.split("/")
             # Définir un fuseau horaire
             tzone = tzone.lower()
             if re.match("p.*t", tzone) is not None:
@@ -550,7 +547,7 @@ class Eventmaker():
                 tzone = mountain
             else:
                 raise ValueError('Fuseau horaire incorrect ou non pris en charge')
-            #  start_time = dt(2017, int(month), int(day), int(hour), int(minute), tzinfo=tzone)
+            #  start_time = dt(int(hour), int(minute), int(day), int(month), 2017, tzinfo=tzone)
             start_time = dt(2017, int(month), int(day), int(hour), int(minute))
             start_time = tzone.localize(start_time)
             start_time = calendar.timegm(start_time.utctimetuple())
