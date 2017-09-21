@@ -634,7 +634,7 @@ class Eventmaker():
                         #     name="Participant count", value=str(
                         #         len(event["participants"])))
                         player_str = ""
-                        player_mention_str = "Votre évènement commence! Rejoindre: "
+                        player_mention_str = "Votre évènement commence! Inscrits: "
                         for user in event["participants"]:
                             target = discord.utils.get(
                                 self.bot.get_all_members(), id=user)
@@ -643,7 +643,7 @@ class Eventmaker():
                         # emb.add_field(
                         #     name="Participant count", value=str(
                         #         len(event["participants"])))
-                        if player_mention_str == "Votre évènement commence! Rejoindre: ":
+                        if player_mention_str == "Votre évènement commence! Inscrits: ":
                             player_mention_str = "L'évènement a commencé, mais personne n'a rejoint"
                         if player_str == "":
                             player_str = "Pas de participants"
