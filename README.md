@@ -1,7 +1,7 @@
 # GW2DiscordBot FR
 
 # Credit
-https://github.com/Maselkov/GW2Bot for guildwars2 cog
+https://github.com/Maselkov/GW2Bot-Red for guildwars2 cog
 
 https://github.com/asmalic/anddy43-cogs for eventmaker cog
 
