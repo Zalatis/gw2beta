@@ -1927,12 +1927,16 @@ class GuildWars2:
             await self.bot.say("Besoin d'autorisation pour intégrer des liens")
 
 
-    def skill_embed(self, skill):
+    async def skill_embed(self, skill):
         #Very inconsistent endpoint, playing it safe
         description = None
         if "description" in skill:
             description = skill["description"]
-        data = discord.Embed(title=skill["name"], description=description)
+        url = "https://wiki-fr.guildwars2.com/wiki/" + skill["name"].replace(' ', '_')
+        async with self.session.head(url) as r:
+            if not r.status == 200:
+               url = None
+        data = discord.Embed(title=skill["name"], description=description, url=url)
         if "icon" in skill:
             data.set_thumbnail(url=skill["icon"])
         if "professions" in skill:
@@ -1972,6 +1976,10 @@ class GuildWars2:
             await self.bot.send_cmd_help(ctx)
             return
 
+    @commands.command(pass_context=True)
+    async def changelog(self, ctx):
+        """Liste des changements récent du bot"""
+        await self.bot.say(self.get_changelog())
 
     @database.command(pass_context=True, name="create")
     async def db_create(self, ctx):
@@ -2226,6 +2234,10 @@ class GuildWars2:
                 await asyncio.sleep(60)
                 continue
 
+
+    def get_changelog(self):
+        with open("data/red/changelog.txt", "r") as f:
+	            return f.read()
 
 
     def gold_to_coins(self, money):
