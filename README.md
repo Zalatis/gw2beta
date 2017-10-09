@@ -8,4 +8,6 @@ https://github.com/asmalic/anddy43-cogs for eventmaker cog
 # Installation
 Install python > 3.5
 
+npm install
+
 python3.x launcher.py
