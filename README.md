@@ -1,5 +1,7 @@
 # GW2DiscordBot FR
 
+Public Bot : https://discordapp.com/oauth2/authorize?client_id=336860774418874400&scope=bot
+
 # Credit
 https://github.com/Maselkov/GW2Bot-Red for guildwars2 cog
 
