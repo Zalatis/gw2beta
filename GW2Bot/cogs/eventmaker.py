@@ -216,7 +216,7 @@ class EventMaker():
                 player_str = ""
             player_str = player_str + player_name
             emb.add_field(
-                name="Joueurs", value=player_str)
+                name="Participants", value=player_str)
             # await self.list_games(ctx)
             return await self.event_menu(ctx, emb, player_str, channel, message=message)
         #     return await\
@@ -230,7 +230,7 @@ class EventMaker():
             if player_str == "":
                 player_str = "Pas de participants"
             emb.add_field(
-                name="Joueurs", value=player_str)
+                name="Participants", value=player_str)
             # await self.list_games(ctx)
             return await self.event_menu(ctx, emb, player_str, channel, message=message)
         #     return await\
@@ -536,7 +536,7 @@ class EventMaker():
                 ct_str = dt.fromtimestamp(
                     event["create_time"], central).strftime("%I:%M %p %Z")
                 pt_str = dt.fromtimestamp(
-                    event["create_time"], paris).strftime("%d/%m %I:%M %p %Z")
+                    event["create_time"], paris).strftime("le %d/%m à %I:%M %p")
                 emb = discord.Embed(title=event["event_name"],
                                     description=event["description"],
                                     color=discord.Colour(0x206694))
@@ -549,8 +549,6 @@ class EventMaker():
                 # emb.set_footer(
                 #     text="Créé le " + dt.fromtimestamp(
                 #         event["create_time"], paris).strftime("%d/%m/%Y %H:%M"))
-                emb.set_footer(
-                    text="Heure de début: " + et_str + ", " + ct_str)
                 emb.add_field(
                     name="Heure de début ", value=pt_str)
                 emb.add_field(name="ID", value=str(event["id"]))
@@ -565,7 +563,7 @@ class EventMaker():
                 if player_str == "":
                     player_str = "Pas de participants"
                 emb.add_field(
-                    name="Joueurs", value=player_str)
+                    name="Participants", value=player_str)
                 # emb.add_field(
                 #     name="Heure de début", value=dt.fromtimestamp(
                 #         event["event_start_time"], paris).strftime("%d/%m/%Y %H:%M"))
@@ -715,7 +713,7 @@ class EventMaker():
         if player_str == "":
             player_str = "Pas de participants"
         emb.add_field(
-            name="Joueurs", value=player_str)
+            name="Participants", value=player_str)
         # await self.bot.send_message(channel, embed=emb)
         await self.event_menu(ctx, emb, player_str, channel)
 
@@ -781,7 +779,7 @@ class EventMaker():
                         #     name="Compteur de participants", value=str(
                         #         len(event["participants"])))
                         player_str = ""
-                        player_mention_str = "Votre évènement commence! Participants: "
+                        player_mention_str = "@everyone - Un évènement commence! Participants: "
                         for user in event["participants"]:
                             target = discord.utils.get(
                                 self.bot.get_all_members(), id=user)
@@ -790,12 +788,12 @@ class EventMaker():
                         # emb.add_field(
                         #     name="Compteur de participants", value=str(
                         #         len(event["participants"])))
-                        if player_mention_str == "Votre évènement commence! Participants: ":
+                        if player_mention_str == "Un évènement commence! Participants: ":
                             player_mention_str = "L'évènement commence, mais aucun participants"
                         if player_str == "":
                             player_str = "Pas de participants"
                         emb.add_field(
-                            name="Joueurs", value=player_str)
+                            name="Participants", value=player_str)
                         try:
                             await self.bot.send_message(channel, player_mention_str)
                             await self.bot.send_message(channel, embed=emb)
