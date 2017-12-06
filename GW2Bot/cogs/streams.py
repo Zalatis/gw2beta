@@ -37,7 +37,7 @@ class OfflineStream(StreamsError):
 class Streams:
     """Streams
 
-    Alerts for a variety of streaming services"""
+    Alerte pour le lancement d'un live"""
 
     def __init__(self, bot):
         self.bot = bot
@@ -51,24 +51,24 @@ class Streams:
 
     @commands.command()
     async def hitbox(self, stream: str):
-        """Checks if hitbox stream is online"""
+        """Vérifie si un live Hitbox est en direct"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(hitbox\.tv\/)'
         stream = re.sub(regex, '', stream)
         try:
             embed = await self.hitbox_online(stream)
         except OfflineStream:
-            await self.bot.say(stream + " is offline.")
+            await self.bot.say(stream + " est hors-ligne.")
         except StreamNotFound:
-            await self.bot.say("That stream doesn't exist.")
+            await self.bot.say("Ce stream n'existe pas.")
         except APIError:
-            await self.bot.say("Error contacting the API.")
+            await self.bot.say("Erreur de l'API.")
         else:
             await self.bot.say(embed=embed)
 
     @commands.command(pass_context=True)
     async def twitch(self, ctx, stream: str):
-        """Checks if twitch stream is online"""
+        """Vérifie si un live Twitch est en direct"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(twitch\.tv\/)'
         stream = re.sub(regex, '', stream)
@@ -76,62 +76,62 @@ class Streams:
             data = await self.fetch_twitch_ids(stream, raise_if_none=True)
             embed = await self.twitch_online(data[0]["_id"])
         except OfflineStream:
-            await self.bot.say(stream + " is offline.")
+            await self.bot.say(stream + " est hors-ligne.")
         except StreamNotFound:
-            await self.bot.say("That stream doesn't exist.")
+            await self.bot.say("Ce stream n'existe pas.")
         except APIError:
-            await self.bot.say("Error contacting the API.")
+            await self.bot.say("Erreur de l'API.")
         except InvalidCredentials:
-            await self.bot.say("Owner: Client-ID is invalid or not set. "
-                               "See `{}streamset twitchtoken`"
+            await self.bot.say("Impossible d'enregistrer les paramètres. "
+                               "Utilisez `!streamset twitchtoken`"
                                "".format(ctx.prefix))
         else:
             await self.bot.say(embed=embed)
 
     @commands.command()
     async def mixer(self, stream: str):
-        """Checks if mixer stream is online"""
+        """Vérifie si un live Mixer est en ligne"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(mixer\.com\/)'
         stream = re.sub(regex, '', stream)
         try:
             embed = await self.mixer_online(stream)
         except OfflineStream:
-            await self.bot.say(stream + " is offline.")
+            await self.bot.say(stream + " est hors-ligne.")
         except StreamNotFound:
-            await self.bot.say("That stream doesn't exist.")
+            await self.bot.say("Ce stream n'existe pas.")
         except APIError:
-            await self.bot.say("Error contacting the API.")
+            await self.bot.say("Erreur de l'API.")
         else:
             await self.bot.say(embed=embed)
 
     @commands.command()
     async def picarto(self, stream: str):
-        """Checks if picarto stream is online"""
+        """Vérifie si un live Picarto est en ligne"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(picarto\.tv\/)'
         stream = re.sub(regex, '', stream)
         try:
             embed = await self.picarto_online(stream)
         except OfflineStream:
-            await self.bot.say(stream + " is offline.")
+            await self.bot.say(stream + " est hors-ligne.")
         except StreamNotFound:
-            await self.bot.say("That stream doesn't exist.")
+            await self.bot.say("Ce stream n'existe pas.")
         except APIError:
-            await self.bot.say("Error contacting the API.")
+            await self.bot.say("Erreur de l'API.")
         else:
             await self.bot.say(embed=embed)
 
     @commands.group(pass_context=True, no_pm=True)
     @checks.mod_or_permissions(manage_server=True)
     async def streamalert(self, ctx):
-        """Adds/removes stream alerts from the current channel"""
+        """Ajoute/retire une alerte de lancement de stream sur le canal"""
         if ctx.invoked_subcommand is None:
             await self.bot.send_cmd_help(ctx)
 
     @streamalert.command(name="twitch", pass_context=True)
     async def twitch_alert(self, ctx, stream: str):
-        """Adds/removes twitch alerts from the current channel"""
+        """Ajoute/retire une alerte de lancement de stream sur le canal actuel"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(twitch\.tv\/)'
         stream = re.sub(regex, '', stream)
@@ -139,14 +139,14 @@ class Streams:
         try:
             data = await self.fetch_twitch_ids(stream, raise_if_none=True)
         except StreamNotFound:
-            await self.bot.say("That stream doesn't exist.")
+            await self.bot.say("Ce stream n'existe pas.")
             return
         except APIError:
-            await self.bot.say("Error contacting the API.")
+            await self.bot.say("Erreur de l'API.")
             return
         except InvalidCredentials:
-            await self.bot.say("Owner: Client-ID is invalid or not set. "
-                               "See `{}streamset twitchtoken`"
+            await self.bot.say("Impossible d'enregistrer les paramètres. "
+                               "Utilisez `!streamset twitchtoken`"
                                "".format(ctx.prefix))
             return
 
@@ -156,16 +156,16 @@ class Streams:
                                                    _id=data[0]["_id"])
 
         if enabled:
-            await self.bot.say("Alert activated. I will notify this channel "
-                               "when {} is live.".format(stream))
+            await self.bot.say("Alerte activé. Les notifications seront faites sur ce "
+                               "canal lorsque {} commencera le live.".format(stream))
         else:
-            await self.bot.say("Alert has been removed from this channel.")
+            await self.bot.say("Alerte désactivé de ce canal.")
 
         dataIO.save_json("data/streams/twitch.json", self.twitch_streams)
 
     @streamalert.command(name="hitbox", pass_context=True)
     async def hitbox_alert(self, ctx, stream: str):
-        """Adds/removes hitbox alerts from the current channel"""
+        """Ajoute/retire une alerte de lancement de stream Hitbox sur le canal"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(hitbox\.tv\/)'
         stream = re.sub(regex, '', stream)
@@ -173,10 +173,10 @@ class Streams:
         try:
             await self.hitbox_online(stream)
         except StreamNotFound:
-            await self.bot.say("That stream doesn't exist.")
+            await self.bot.say("Ce stream n'existe pas.")
             return
         except APIError:
-            await self.bot.say("Error contacting the API.")
+            await self.bot.say("Erreur de l'API.")
             return
         except OfflineStream:
             pass
@@ -186,16 +186,16 @@ class Streams:
                                                    channel)
 
         if enabled:
-            await self.bot.say("Alert activated. I will notify this channel "
-                               "when {} is live.".format(stream))
+            await self.bot.say("Alerte activé. Les notifications seront faites sur ce "
+                               "canal lorsque {} commencera le live.".format(stream))
         else:
-            await self.bot.say("Alert has been removed from this channel.")
+            await self.bot.say("Alerte désactivé de ce canal.")
 
         dataIO.save_json("data/streams/hitbox.json", self.hitbox_streams)
 
     @streamalert.command(name="mixer", pass_context=True)
     async def mixer_alert(self, ctx, stream: str):
-        """Adds/removes mixer alerts from the current channel"""
+        """Ajoute/retire une alerte de lancement de stream Mixer sur le canal"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(mixer\.com\/)'
         stream = re.sub(regex, '', stream)
@@ -203,10 +203,10 @@ class Streams:
         try:
             await self.mixer_online(stream)
         except StreamNotFound:
-            await self.bot.say("That stream doesn't exist.")
+            await self.bot.say("Ce stream n'existe pas.")
             return
         except APIError:
-            await self.bot.say("Error contacting the API.")
+            await self.bot.say("Erreur de l'API.")
             return
         except OfflineStream:
             pass
@@ -216,16 +216,16 @@ class Streams:
                                                    channel)
 
         if enabled:
-            await self.bot.say("Alert activated. I will notify this channel "
-                               "when {} is live.".format(stream))
+            await self.bot.say("Alerte activé. Les notifications seront faites sur ce "
+                               "canal lorsque {} commencera le live.".format(stream))
         else:
-            await self.bot.say("Alert has been removed from this channel.")
+            await self.bot.say("Alerte désactivé de ce canal.")
 
         dataIO.save_json("data/streams/beam.json", self.mixer_streams)
 
     @streamalert.command(name="picarto", pass_context=True)
     async def picarto_alert(self, ctx, stream: str):
-        """Adds/removes picarto alerts from the current channel"""
+        """Ajoute/retire une alerte de lancement de stream Picarto sur le canal"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(picarto\.tv\/)'
         stream = re.sub(regex, '', stream)
@@ -233,10 +233,10 @@ class Streams:
         try:
             await self.picarto_online(stream)
         except StreamNotFound:
-            await self.bot.say("That stream doesn't exist.")
+            await self.bot.say("Ce stream n'existe pas.")
             return
         except APIError:
-            await self.bot.say("Error contacting the API.")
+            await self.bot.say("Erreur de l'API.")
             return
         except OfflineStream:
             pass
@@ -246,16 +246,16 @@ class Streams:
                                                    channel)
 
         if enabled:
-            await self.bot.say("Alert activated. I will notify this channel "
-                               "when {} is live.".format(stream))
+            await self.bot.say("Alerte activé. Les notifications seront faites sur ce "
+                               "canal lorsque {} commencera le live.".format(stream))
         else:
-            await self.bot.say("Alert has been removed from this channel.")
+            await self.bot.say("Alerte désactivé de ce canal.")
 
         dataIO.save_json("data/streams/picarto.json", self.picarto_streams)
 
     @streamalert.command(name="stop", pass_context=True)
     async def stop_alert(self, ctx):
-        """Stops all streams alerts in the current channel"""
+        """Désactive toutes les alertes sur le canal"""
         channel = ctx.message.channel
 
         streams = (
@@ -282,41 +282,41 @@ class Streams:
         dataIO.save_json("data/streams/beam.json", self.mixer_streams)
         dataIO.save_json("data/streams/picarto.json", self.picarto_streams)
 
-        await self.bot.say("There will be no more stream alerts in this "
-                           "channel.")
+        await self.bot.say("Toutes les alertes sont désactivés "
+                           "sur ce canal.")
 
     @commands.group(pass_context=True)
     async def streamset(self, ctx):
-        """Stream settings"""
+        """Paramètres de stream"""
         if ctx.invoked_subcommand is None:
             await self.bot.send_cmd_help(ctx)
 
     @streamset.command()
     @checks.is_owner()
     async def twitchtoken(self, token : str):
-        """Sets the Client-ID for Twitch
+        """Paramètre le Client-ID pour Twitch
 
         https://blog.twitch.tv/client-id-required-for-kraken-api-calls-afbb8e95f843"""
         self.settings["TWITCH_TOKEN"] = token
         dataIO.save_json("data/streams/settings.json", self.settings)
-        await self.bot.say('Twitch Client-ID set.')
+        await self.bot.say('Twitch Client-ID paramétré.')
 
     @streamset.command(pass_context=True, no_pm=True)
     @checks.admin()
     async def mention(self, ctx, *, mention_type : str):
-        """Sets mentions for stream alerts
+        """Paramètre les mentions pour les alertes
 
-        Types: everyone, here, none"""
+        Tapez: everyone, here, none"""
         server = ctx.message.server
         mention_type = mention_type.lower()
 
         if mention_type in ("everyone", "here"):
             self.settings[server.id]["MENTION"] = "@" + mention_type
-            await self.bot.say("When a stream is online @\u200b{} will be "
-                               "mentioned.".format(mention_type))
+            await self.bot.say("Quand un stream est en ligne @\u200b{} seront "
+                               "mentionnés.".format(mention_type))
         elif mention_type == "none":
             self.settings[server.id]["MENTION"] = ""
-            await self.bot.say("Mentions disabled.")
+            await self.bot.say("Mentions désactivées.")
         else:
             await self.bot.send_cmd_help(ctx)
 
@@ -325,16 +325,16 @@ class Streams:
     @streamset.command(pass_context=True, no_pm=True)
     @checks.admin()
     async def autodelete(self, ctx):
-        """Toggles automatic notification deletion for streams that go offline"""
+        """Supprime les alertes de live lors de la fin du live"""
         server = ctx.message.server
         settings = self.settings[server.id]
         current = settings.get("AUTODELETE", True)
         settings["AUTODELETE"] = not current
         if settings["AUTODELETE"]:
-            await self.bot.say("Notifications will be automatically deleted "
-                               "once the stream goes offline.")
+            await self.bot.say("Les notifications seront désactivées "
+                               "lors de la fin du live.")
         else:
-            await self.bot.say("Notifications won't be deleted anymore.")
+            await self.bot.say("Les notifications ne seront plus supprimées.")
 
         dataIO.save_json("data/streams/settings.json", self.settings)
 
@@ -444,16 +444,16 @@ class Streams:
             logo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png"
         status = channel["status"]
         if not status:
-            status = "Untitled broadcast"
+            status = "Stream sans titre"
         embed = discord.Embed(title=status, url=url)
         embed.set_author(name=channel["display_name"])
         embed.add_field(name="Followers", value=channel["followers"])
-        embed.add_field(name="Total views", value=channel["views"])
+        embed.add_field(name="Total de vues", value=channel["views"])
         embed.set_thumbnail(url=logo)
         if data["stream"]["preview"]["medium"]:
             embed.set_image(url=data["stream"]["preview"]["medium"] + self.rnd_attr())
         if channel["game"]:
-            embed.set_footer(text="Playing: " + channel["game"])
+            embed.set_footer(text="Joue à: " + channel["game"])
         embed.color = 0x6441A4
         return embed
 
@@ -469,7 +469,7 @@ class Streams:
         embed.set_thumbnail(url=base_url + channel["user_logo"])
         if livestream["media_thumbnail"]:
             embed.set_image(url=base_url + livestream["media_thumbnail"] + self.rnd_attr())
-        embed.set_footer(text="Playing: " + livestream["category_name"])
+        embed.set_footer(text="Joue à: " + livestream["category_name"])
         embed.color = 0x98CB00
         return embed
 
@@ -481,7 +481,7 @@ class Streams:
         embed = discord.Embed(title=data["name"], url=url)
         embed.set_author(name=user["username"])
         embed.add_field(name="Followers", value=data["numFollowers"])
-        embed.add_field(name="Total views", value=data["viewersTotal"])
+        embed.add_field(name="Total de vues", value=data["viewersTotal"])
         if user["avatarUrl"]:
             embed.set_thumbnail(url=user["avatarUrl"])
         else:
@@ -490,7 +490,7 @@ class Streams:
             embed.set_image(url=data["thumbnail"]["url"] + self.rnd_attr())
         embed.color = 0x4C90F3
         if data["type"] is not None:
-            embed.set_footer(text="Playing: " + data["type"]["name"])
+            embed.set_footer(text="Joue à: " + data["type"]["name"])
         return embed
 
     def picarto_embed(self, data):
@@ -503,7 +503,7 @@ class Streams:
         embed.set_author(name=data["name"])
         embed.set_image(url=thumbnail + self.rnd_attr())
         embed.add_field(name="Followers", value=data["followers"])
-        embed.add_field(name="Total views", value=data["viewers_total"])
+        embed.add_field(name="Total de vues", value=data["viewers_total"])
         embed.set_thumbnail(url=avatar)
         embed.color = 0x132332
         data["tags"] = ", ".join(data["tags"])
@@ -517,12 +517,12 @@ class Streams:
             data["adult"] = ""
 
         embed.color = 0x4C90F3
-        embed.set_footer(text="{adult}Category: {category} | Tags: {tags}"
+        embed.set_footer(text="{adult}Categorie: {category} | Tags: {tags}"
                               "".format(**data))
         return embed
 
     def enable_or_disable_if_active(self, streams, stream, channel, _id=None):
-        """Returns True if enabled or False if disabled"""
+        """Returne True si activé ou False si désactivé"""
         for i, s in enumerate(streams):
             stream_id = s.get("ID")
             if stream_id and _id:     # ID is available, matching by ID is
@@ -557,10 +557,10 @@ class Streams:
         try:
             await self._migration_twitch_v5()
         except InvalidCredentials:
-            print("Error during convertion of twitch usernames to IDs: "
-                  "invalid token")
+            print("Erreur lors de la conversion du nom de l'utilisateur en ID: "
+                  "Token Invalide")
         except Exception as e:
-            print("Error during convertion of twitch usernames to IDs: "
+            print("Erreur lors de la conversion du nom de l'utilisateur en ID: "
                   "{}".format(e))
 
         while self == self.bot.get_cog("Streams"):
@@ -601,7 +601,7 @@ class Streams:
                                 continue
                             mention = self.settings.get(channel.server.id, {}).get("MENTION", "")
                             can_speak = channel.permissions_for(channel.server.me).send_messages
-                            message = mention + " {} is live!".format(stream["NAME"])
+                            message = mention + " {} est en live!".format(stream["NAME"])
                             if channel and can_speak:
                                 m = await self.bot.send_message(channel, message, embed=embed)
                                 messages_sent.append(m)
@@ -631,7 +631,7 @@ class Streams:
         del self.messages_cache[key]
 
     def rnd_attr(self):
-        """Avoids Discord's caching"""
+        """Evite la mise en cache de Discord"""
         return "?rnd=" + "".join([choice(ascii_letters) for i in range(6)])
 
     async def _migration_twitch_v5(self):
