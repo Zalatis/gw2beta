@@ -90,7 +90,7 @@ class Streams:
 
     @commands.command()
     async def mixer(self, stream: str):
-        """Vérifie si un live Mixer est en ligne"""
+        """Vérifie si un live Mixer est en direct"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(mixer\.com\/)'
         stream = re.sub(regex, '', stream)
@@ -107,7 +107,7 @@ class Streams:
 
     @commands.command()
     async def picarto(self, stream: str):
-        """Vérifie si un live Picarto est en ligne"""
+        """Vérifie si un live Picarto est en direct"""
         stream = escape_mass_mentions(stream)
         regex = r'^(https?\:\/\/)?(www\.)?(picarto\.tv\/)'
         stream = re.sub(regex, '', stream)
