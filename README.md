@@ -7,6 +7,10 @@ https://github.com/Maselkov/GW2Bot-Red for guildwars2 cog
 
 https://github.com/asmalic/anddy43-cogs for eventmaker cog
 
+# Donation
+
+paypal.me/zalati
+
 # Installation
 Install python > 3.5
 
