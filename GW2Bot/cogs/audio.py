@@ -869,14 +869,14 @@ class Audio:
             try:
                 song = await self._guarantee_downloaded(server, url)
             except YouTubeDlError as e:
-                message = ("I'm unable to play '{}' because of an error:\n"
+                message = ("Impossible de lire '{}' à cause d'une erreur:\n"
                           "'{}'".format(clean_url, str(e)))
                 message = escape(message, mass_mentions=True)
                 await self.bot.send_message(channel, message)
                 return
             except MaximumLength:
-                message = ("I'm unable to play '{}' because it exceeds the "
-                          "maximum audio length.".format(clean_url))
+                message = ("Impossible de lire '{}' car elle dépasse "
+                          "la durée maximale.".format(clean_url))
                 message = escape(message, mass_mentions=True)
                 await self.bot.send_message(channel, message)
                 return
@@ -2204,8 +2204,8 @@ class Audio:
                     elif len(queue) > 0:
                         queue.popleft()
                     clean_url = self._clean_url(next_url)
-                    message = ("I'm unable to play '{}' because of an "
-                              "error:\n'{}'".format(clean_url, str(e)))
+                    message = ("Impossible de lire '{}'à cause d'une "
+                              "erreur:\n'{}'".format(clean_url, str(e)))
                     message = escape(message, mass_mentions=True)
                     await self.bot.send_message(next_channel, message)
 
