@@ -2455,8 +2455,8 @@ class GuildWars2:
     def schedule_embed(self, schedule):
         data = discord.Embed()
         for boss in schedule:
-            value = "Time: {}\nWaypoint: {}".format(boss["time"], boss["waypoint"])
-            data.add_field(name="{} in {}".format(boss["name"], boss["diff"]), value=value, inline=False)
+            value = "Heure: {}\nWaypoint: {}".format(boss["time"], boss["waypoint"])
+            data.add_field(name="{} dans {}".format(boss["name"], boss["diff"]), value=value, inline=False)
         data.set_author(name="World boss à venir")
         data.set_footer(text="Les heures sont en GMT + 2 [Europe/Paris]")
         return data
