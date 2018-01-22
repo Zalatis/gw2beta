@@ -155,7 +155,7 @@ class RSS(object):
             self.feeds.add_feed(ctx, name, url)
             await self.bot.send_message(
                 channel,
-                'Flux "{}" ajouté. Modifiez le templace en'
+                'Flux "{}" ajouté. Modifiez le template en'
                 ' utilisant !rss template'.format(name))
         else:
             await self.bot.send_message(
