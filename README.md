@@ -7,6 +7,8 @@ https://github.com/Maselkov/GW2Bot-Red for guildwars2 cog
 
 https://github.com/asmalic/anddy43-cogs for eventmaker cog
 
+https://github.com/tekulvw/Squid-Plugins/tree/master/rss for rss cog
+
 # Donation
 
 https://paypal.me/zalati
