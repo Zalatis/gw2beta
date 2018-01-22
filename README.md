@@ -17,6 +17,7 @@ Install python > 3.5
 npm install
 
 install https://github.com/kurtmckee/feedparser
+
 python3.x launcher.py
 
 
