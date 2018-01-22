@@ -142,7 +142,7 @@ class RSS(object):
 
     @commands.group(pass_context=True)
     async def rss(self, ctx):
-        """RSS feed stuff"""
+        """Commandes des flux rss"""
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
 
