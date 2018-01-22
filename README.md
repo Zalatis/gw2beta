@@ -16,4 +16,7 @@ Install python > 3.5
 
 npm install
 
+python3.x feedparser/setup.py
 python3.x launcher.py
+
+
