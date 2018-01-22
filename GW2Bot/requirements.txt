@@ -4,3 +4,4 @@ youtube_dl
 imgurpython
 motor
 beautifulsoup4
+feedparser
