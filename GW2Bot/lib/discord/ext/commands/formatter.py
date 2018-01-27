@@ -342,7 +342,7 @@ class HelpFormatter:
 
                 self._add_subcommands_to_page(max_width, commands)
         else:
-            self._paginator.add_line('Commands:')
+            self._paginator.add_line('Commandes:')
             self._add_subcommands_to_page(max_width, self.filter_command_list())
 
         # add the ending note
