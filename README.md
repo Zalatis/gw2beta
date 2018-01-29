@@ -42,6 +42,6 @@ npm install
 
 install https://github.com/kurtmckee/feedparser
 
-python3.x launcher.py
+python3.6 launcher.py
 
 
