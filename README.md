@@ -40,7 +40,19 @@ python3.6 get-pip.py
 
 npm install
 
-install https://github.com/kurtmckee/feedparser
+git clone https://github.com/kurtmckee/feedparser.git
+
+cd feedparser
+
+cd ..
+
+python3.6 setup.py install
+
+git clone https://git.launchpad.net/pytz
+
+cd pytz-2017.2
+
+python3.6 setup.py install
 
 python3.6 launcher.py
 
