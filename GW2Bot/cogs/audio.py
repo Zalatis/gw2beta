@@ -327,7 +327,7 @@ class Audio:
         if self._old_game is False:
             self._old_game = list(self.bot.servers)[0].me.game
         status = list(self.bot.servers)[0].me.status
-        game = discord.Game(name=song.title)
+        game = discord.Game(name=song.title, type=2)
         await self.bot.change_presence(status=status, game=game)
         log.debug('Bot status changed to song title: ' + song.title)
 
@@ -1598,12 +1598,6 @@ class Audio:
         else:
             await self.bot.say("Terminé :D")
 
-    @playlist.command(pass_context=True, no_pm=True, name="extend")
-    async def playlist_extend(self, ctx, playlist_url_or_name):
-        """Prolonge une liste de lecture avec un lien de playlist"""
-        # Need better wording ^
-        await self.bot.say("Pas implémenté pour le moment")
-
     @playlist.command(pass_context=True, no_pm=True, name="list")
     async def playlist_list(self, ctx):
         """Listes toutes les playlists disponibles"""
@@ -1974,14 +1968,14 @@ class Audio:
                     dur = "{0}:{1:0>2}".format(m, s)
             else:
                 dur = None
-            msg = ("\n**Title:** {}\n**Author:** {}\n**Uploader:** {}\n"
-                   "**Views:** {}\n**Duration:** {}\n\n<{}>".format(
+            msg = ("\n**Titre:** {}\n**Auteur:** {}\n**Uploader:** {}\n"
+                   "**Vues:** {}\n**Durée:** {}\n\n<{}>".format(
                        song.title, song.creator, song.uploader,
                        song.view_count, dur, song.webpage_url))
-            await self.bot.say(msg.replace("**Author:** None\n", "")
-                                  .replace("**Views:** None\n", "")
+            await self.bot.say(msg.replace("**Auteur:** None\n", "")
+                                  .replace("**Vues:** None\n", "")
                                   .replace("**Uploader:** None\n", "")
-                                  .replace("**Duration:** None\n", ""))
+                                  .replace("**Durée:** None\n", ""))
         else:
             await self.bot.say("Darude - Sandstorm.")
 
@@ -2170,7 +2164,7 @@ class Audio:
                     return
                 if repeat and last_song:
                     queued_last_song = QueuedSong(last_song.webpage_url, last_song_channel)
-                    queue.append(last_song.webpage_url)
+                    queue.append(queued_last_song)
             else:
                 song = None
             self._set_queue_nowplaying(server, song, channel)
