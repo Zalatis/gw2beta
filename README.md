@@ -9,6 +9,8 @@ https://github.com/asmalic/anddy43-cogs for eventmaker cog
 
 https://github.com/tekulvw/Squid-Plugins/tree/master/rss for rss cog
 
+https://github.com/Sitryk/Sitryk-Cogs for genius cog
+
 # Donation
 
 https://paypal.me/zalati
