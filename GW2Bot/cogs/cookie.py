@@ -42,7 +42,7 @@ class Cookie:
 
     @commands.group(pass_context=True, no_pm=True)
     async def setcookie(self, ctx):
-        """Paramétrage des CD..."""
+        """Paramétrage des CD... (En secondes)"""
 
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
@@ -56,7 +56,7 @@ class Cookie:
         if cooldown >= 0:
             settings["Config"]["Steal CD"] = cooldown
             dataIO.save_json(self.file_path, self.system)
-            msg = "Le temps de recharge pour voler est fixé à {}".format(cooldown)
+            msg = "Le temps de recharge pour voler est fixé à {} seconde(s)".format(cooldown)
         else:
             msg = "Le temps de recharge doit être supérieur à 0."
         await self.bot.say(msg)
@@ -70,7 +70,7 @@ class Cookie:
         if cooldown >= 0:
             settings["Config"]["Cookie CD"] = cooldown
             dataIO.save_json(self.file_path, self.system)
-            msg = "Le temps de recharge pour obtenir des cookies est fixé à {}".format(cooldown)
+            msg = "Le temps de recharge pour obtenir des cookies est fixé à {} seconde(s)".format(cooldown)
         else:
             msg = "Le temps de recharge doit être supérieur à 0."
         await self.bot.say(msg)
@@ -103,7 +103,7 @@ class Cookie:
 
     @commands.command(pass_context=True, no_pm=True)
     async def cookie(self, ctx):
-        """Obtenir un nombre aléatoire de cookies. 12h de recharge"""
+        """Obtenir un nombre aléatoire de cookies."""
         author = ctx.message.author
         server = ctx.message.server
         action = "Cookie CD"
@@ -130,7 +130,7 @@ class Cookie:
 
     @commands.command(pass_context=True, no_pm=True)
     async def steal(self, ctx, user: discord.Member=None):
-        """Voler des cookies d'un autre utilisateur. 2h de recharge"""
+        """Voler des cookies d'un autre utilisateur."""
         author = ctx.message.author
         server = author.server
         action = "Steal CD"
@@ -164,9 +164,9 @@ class Cookie:
             return True
         else:
             s = abs(settings["Players"][userid][action] - int(time.perf_counter()))
-            secondes = abs(s - path)
-            remaining = self.time_formatting(secondes)
-            await self.bot.say("Cette action a un temps de recharge.\nIl reste:{}".format(remaining))
+            seconds = abs(s - path)
+            remaining = self.time_formatting(seconds)
+            await self.bot.say("Cette action a un temps de recharge.\nIl reste : {}".format(remaining))
             return False
 
     def steal_logic(self, settings, user, author):
@@ -225,26 +225,26 @@ class Cookie:
                                                "Cookie CD": 0}
             dataIO.save_json(self.file_path, self.system)
 
-    def time_formatting(self, secondes):
+    def time_formatting(self, seconds):
         # Calculate the time and input into a dict to plural the strings later.
-        m, s = divmod(secondes, 60)
+        m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
-        data = PluralDict({'heure': h, 'minute': m, 'seconde': s})
+        data = PluralDict({'hour': h, 'minute': m, 'second': s})
         if h > 0:
-            fmt = "{heure} heure{heure(s)}"
-            if data["minute"] > 0 and data["seconde"] > 0:
-                fmt += ", {minute} minute{minute(s)}, et {seconde} seconde{seconde(s)}"
-            if data["seconde"] > 0 == data["minute"]:
-                fmt += ", and {seconde} seconde{seconde(s)}"
+            fmt = "{hour} heure{hour(s)}"
+            if data["minute"] > 0 and data["second"] > 0:
+                fmt += ", {minute} minute{minute(s)}, et {second} seconde{second(s)}"
+            if data["second"] > 0 == data["minute"]:
+                fmt += ", et {second} seconde{second(s)}"
             msg = fmt.format_map(data)
         elif h == 0 and m > 0:
-            if data["seconde"] == 0:
+            if data["second"] == 0:
                 fmt = "{minute} minute{minute(s)}"
             else:
-                fmt = "{minute} minute{minute(s)}, et {seconde} seconde{seconde(s)}"
+                fmt = "{minute} minute{minute(s)}, et {second} seconde{second(s)}"
             msg = fmt.format_map(data)
         elif m == 0 and h == 0 and s > 0:
-            fmt = "{seconde} seconde{seconde(s)}"
+            fmt = "{second} seconde{second(s)}"
             msg = fmt.format_map(data)
         elif m == 0 and h == 0 and s == 0:
             msg = "None"
