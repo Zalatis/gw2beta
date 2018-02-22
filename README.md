@@ -11,6 +11,8 @@ https://github.com/tekulvw/Squid-Plugins/tree/master/rss for rss cog
 
 https://github.com/Sitryk/Sitryk-Cogs for genius cog
 
+https://github.com/Redjumpman/Jumper-Cogs/tree/master/cookie for cookie cog
+
 # Donation
 
 https://paypal.me/zalati
