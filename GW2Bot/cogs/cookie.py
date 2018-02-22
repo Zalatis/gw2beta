@@ -115,7 +115,7 @@ class Cookie:
             settings["Players"][author.id]["Cookies"] += cookies
             dataIO.save_json(self.file_path, self.system)
             await self.bot.say("~₍˄·͈༝·͈˄₍˄·͈༝·͈˄ （（≡￣♀￣≡））˄·͈༝·͈˄₎₍˄·͈༝·͈˄₎◞ ̑̑ \nVous avez reçu {} "
-                               "cookie(s) des dieux Cookie! Nyaaaaaan!".format(cookies))
+                               ":cookie: des dieux Cookie! Nyaaaaaan!".format(cookies))
 
     @commands.command(pass_context=True, no_pm=False, ignore_extra=False)
     async def jar(self, ctx):
