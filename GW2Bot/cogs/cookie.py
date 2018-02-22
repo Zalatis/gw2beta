@@ -114,7 +114,7 @@ class Cookie:
             cookies = random.choice(weighted_sample)
             settings["Players"][author.id]["Cookies"] += cookies
             dataIO.save_json(self.file_path, self.system)
-            await self.bot.say("~₍˄·͈༝·͈˄₍˄·͈༝·͈˄ （（≡￣♀￣≡））˄·͈༝·͈˄₎₍˄·͈༝·͈˄₎◞ ̑̑ \nVous avez reçu {} "
+            await self.bot.say("~₍˄·͈༝·͈˄₍˄·͈༝·͈˄ （（≡￣♀￣≡））˄·͈༝·͈˄₎₍˄·͈༝·͈˄₎◞ ̑̑ \nVous avez reçu **{}** "
                                ":cookie: des dieux Cookie! Nyaaaaaan!".format(cookies))
 
     @commands.command(pass_context=True, no_pm=False, ignore_extra=False)
@@ -148,7 +148,7 @@ class Cookie:
 
         if await self.check_cooldowns(author.id, action, settings):
             msg = self.steal_logic(settings, user, author)
-            await self.bot.say("ଲ(=(|) ɪ (|)=)ଲ Neko-chan est à l'affût pour voler :cookie:")
+            await self.bot.say("ଲ(=(|) ɪ (|)=)ଲ Neko-chan est à l'affût pour voler des :cookie:")
             await asyncio.sleep(4)
             await self.bot.say(msg)
 
@@ -196,7 +196,7 @@ class Cookie:
                 msg = ("ω(=＾ ‥ ＾=)ﾉ彡:cookie:\nVous avez volé {} cookies à "
                        "{}!".format(stolen, user.name))
             else:
-                msg = "ω(=｀ｪ ´=)ω Nyaa... Neko-chan n'a pas pu trouver son :cookie: pot!"
+                msg = "ω(=｀ｪ ´=)ω Nyaa... Neko-chan n'a pas pu trouver de pot à :cookie: !"
         return msg
 
     def random_user(self, settings, author, server):
