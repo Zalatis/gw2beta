@@ -193,7 +193,7 @@ class Cookie:
                 settings["Players"][user.id]["Cookies"] -= stolen
                 settings["Players"][author.id]["Cookies"] += stolen
                 dataIO.save_json(self.file_path, self.system)
-                msg = ("ω(=＾ ‥ ＾=)ﾉ彡:cookie:\nVous avez volé {} cookies à "
+                msg = ("ω(=＾ ‥ ＾=)ﾉ彡:cookie:\nVous avez volé {} cookie(s) à "
                        "{}!".format(stolen, user.name))
             else:
                 msg = "ω(=｀ｪ ´=)ω Nyaa... Neko-chan n'a pas pu trouver de pot à :cookie: !"
