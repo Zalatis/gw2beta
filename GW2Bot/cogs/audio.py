@@ -1839,7 +1839,7 @@ class Audio:
 
     @commands.command(pass_context=True, no_pm=True)
     async def resume(self, ctx):
-        """Reprend une chanson ou une playlist en pause"""
+        """Reprendre une chanson ou une playlist en pause"""
         server = ctx.message.server
         if not self.voice_connected(server):
             await self.bot.say("Pas de connexion vocale dans ce serveur.")
