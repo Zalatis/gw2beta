@@ -125,7 +125,7 @@ class Cookie:
         settings = self.check_server_settings(server)
         self.account_check(settings, author)
         cookies = settings["Players"][author.id]["Cookies"]
-        await self.bot.whisper("ฅ(=＾‥ ＾=)ฅ Neko-chan voit **{}** cookie(s) dans votre pot. "
+        await self.bot.whisper("ฅ(=＾‥ ＾=)ฅ Neko-chan voit **{}** :cookie: dans votre pot. "
                                "Nyaa nyaa.".format(cookies))
 
     @commands.command(pass_context=True, no_pm=True)
@@ -172,7 +172,7 @@ class Cookie:
     def steal_logic(self, settings, user, author):
         success_chance = random.randint(1, 100)
         if user == "Fail":
-            msg = "ω(=OｪO=)ω Nyaaaaaaaan! Je n'ai trouvé personne avec des cookies!"
+            msg = "ω(=OｪO=)ω Nyaaaaaaaan! Je n'ai trouvé personne avec des :cookie: !"
             return msg
 
         if user.id not in settings["Players"]:
