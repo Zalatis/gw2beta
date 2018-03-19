@@ -2365,7 +2365,7 @@ class Audio:
                 song.thumbnail = (self.bot.user.avatar_url).replace('webp', 'png')
 
         msg = ("**Auteur:** `{}`\n**Uploader:** `{}`\n"
-                "**Durée:** `{}`\n**Notation: **`{:.2f}`\n**Vues:** `{}`".format(
+                "**Durée:** `{}`\n**Note: **`{:.2f}`\n**Vues:** `{}`".format(
                 song.creator, song.uploader, str(datetime.timedelta(seconds=song.duration)), song.rating, song.view_count))
 
         colour = ''.join([choice('0123456789ABCDEF') for x in range(6)])
