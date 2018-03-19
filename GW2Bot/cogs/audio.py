@@ -19,6 +19,7 @@ import time
 import inspect
 import subprocess
 import urllib.parse
+import datetime
 from enum import Enum
 
 __author__ = "tekulvw"
@@ -62,7 +63,7 @@ class MaximumLength(Exception):
 
     def __str__(self):
         return self.message
-    
+
 
 class YouTubeDlError(Exception):
     def __init__(self, m):
@@ -148,6 +149,10 @@ class Song:
         self.duration = kwargs.pop('duration', 60)
         self.start_time = kwargs.pop('start_time', None)
         self.end_time = kwargs.pop('end_time', None)
+        self.thumbnail = kwargs.pop('thumbnail', None)
+        self.view_count = kwargs.pop('view_count', None)
+        self.rating = kwargs.pop('average_rating', None)
+        self.song_start_time = None
 
 class QueuedSong:
     def __init__(self, url, channel):
@@ -307,8 +312,10 @@ class Audio:
         self.queue = {}  # add deque's, repeat
         self.downloaders = {}  # sid: object
         self.settings = dataIO.load_json("data/audio/settings.json")
+        self.settings_path = "data/audio/settings.json"
         self.server_specific_setting_keys = ["VOLUME", "VOTE_ENABLED",
-                                             "VOTE_THRESHOLD", "NOPPL_DISCONNECT"]
+                                             "VOTE_THRESHOLD", "NOPPL_DISCONNECT",
+                                             "NOTIFY", "NOTIFY_CHANNEL", "TIMER_DISCONNECT"]
         self.cache_path = "data/audio/cache"
         self.local_playlist_path = "data/audio/localtracks"
         self._old_game = False
@@ -888,6 +895,8 @@ class Audio:
             except FileNotFoundError:
                 raise
 
+        song.song_start_time = datetime.datetime.now()
+
         voice_client = await self._create_ffmpeg_player(server, song.id,
                                                         local=local,
                                                         start_time=song.start_time,
@@ -1173,6 +1182,35 @@ class Audio:
         await self.bot.say("La durée max est maintenant de {} secondes.".format(length))
         self.save_settings()
 
+    @checks.mod_or_permissions(manage_messages=True)
+    @audioset.command(name="notifychannel", pass_context=True)
+    async def audioset_notifychannel(self, ctx, channel: discord.Channel):
+        """Définit le canal pour l'annonce de la musique"""
+        server = ctx.message.server
+        if not server.me.permissions_in(channel).send_messages:
+            await self.bot.say("Pas d'autorisations pour parler dans ce canal.")
+            return
+        self.set_server_setting(server, "NOTIFY_CHANNEL", channel.id)
+        dataIO.save_json(self.settings_path, self.settings)
+        await self.bot.send_message(channel, "Je vais maintenant annoncer les chansons ici")
+
+    @audioset.command(name="notify", pass_context=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def audioset_notify(self, ctx):
+        """Envoie une notification sur le canal au début d'une chanson"""
+        server = ctx.message.server
+        settings = self.get_server_settings(server.id)
+        notify = settings.get("NOTIFY", True)
+        self.set_server_setting(server, "NOTIFY", not notify)
+        if self.get_server_settings(server)["NOTIFY_CHANNEL"] is None:
+            self.set_server_setting(server, "NOTIFY_CHANNEL", ctx.message.channel.id)
+            dataIO.save_json(self.settings_path, self.settings)
+        if not notify:
+            await self.bot.say("Notifications des chansons activés.")
+        else:
+            await self.bot.say("Notifications des chansons désactivés.")
+        self.save_settings()
+
     @audioset.command(name="player")
     @checks.is_owner()
     async def audioset_player(self):
@@ -1198,6 +1236,26 @@ class Audio:
         else:
             await self.bot.say("Les titres des chansons n'apparaîtront plus"
                                " en statut")
+        self.save_settings()
+
+    @audioset.command(name="timerdisconnect", pass_context=True)
+    @checks.mod_or_permissions(manage_messages=True)
+    async def audioset_timerdisconnect(self, ctx):
+        """Toggles the disconnect timer"""
+        server = ctx.message.server
+        settings = self.get_server_settings(server.id)
+        timer_disconnect = settings.get("TIMER_DISCONNECT", True)
+        self.set_server_setting(server, "TIMER_DISCONNECT",
+                                not timer_disconnect)
+        if not timer_disconnect:
+            await self.bot.say("Le bot se déconnectera automatiquement après"
+                               " l'arrêt de la lecture et cinq minutes"
+                               " se sont écoulées. Désactivez ce paramètre pour"
+                               " empêcher le robot de se déconnecter"
+                               " avec d'autres pistes musicales.")
+        else:
+            await self.bot.say("Le robot ne se déconnecte plus automatiquement"
+                               " pendant la lecture d'autres pistes musicales.")
         self.save_settings()
 
     @audioset.command(pass_context=True, name="volume", no_pm=True)
@@ -1772,15 +1830,20 @@ class Audio:
             await self.bot.say("Rien n'est mis en file d'attente sur ce serveur.")
             return
 
+        colour = ''.join([choice('0123456789ABCDEF') for x in range(6)])
+        em = discord.Embed(description="", colour=int(colour, 16))
+
         msg = ""
 
-        now_playing = self._get_queue_nowplaying(server)
-
-        if now_playing is not None:
+        if self.is_playing(server):
             msg += "\n***En lecture:***\n{}\n".format(now_playing.title)
+            msg += self._draw_play(now_playing, server) + "\n"  # draw play thing
+            if now_playing.thumbnail is None:
+                now_playing.thumbnail = (self.bot.user.avatar_url).replace('webp', 'png')
+            em.set_thumbnail(url=now_playing.thumbnail)
 
-        queued_song_list = self._get_queue(server, 5)
-        tempqueued_song_list = self._get_queue_tempqueue(server, 5)
+        queued_song_list = self._get_queue(server, 10)
+        tempqueued_song_list = self._get_queue_tempqueue(server, 10)
 
         await self.bot.say("Collecte d'informations...")
 
@@ -1790,20 +1853,63 @@ class Audio:
         song_info = []
         for num, song in enumerate(tempqueue_song_list, 1):
             try:
-                song_info.append("{}. {.title}".format(num, song))
+                if song.title is None:
+                    song_info.append("**[{}]** {.webpage_url} ({})".format(num, song, str_duration))
+                else:
+                    song_info.append("**[{}]** {.title} ({})".format(num, song, str_duration))
             except AttributeError:
-                song_info.append("{}. {.webpage_url}".format(num, song))
+                song_info.append("**[{}]** {.webpage_url} ({})".format(num, song, str_duration))
 
         for num, song in enumerate(queue_song_list, len(song_info) + 1):
-            if num > 5:
+            str_duration = str(datetime.timedelta(seconds=song.duration))
+            if num > 10:
                 break
             try:
-                song_info.append("{}. {.title}".format(num, song))
+                if song.title is None:
+                    song_info.append("**[{}]** {.webpage_url} ({})".format(num, song, str_duration))
+                else:
+                    song_info.append("**[{}]** {.title} ({})".format(num, song, str_duration))
             except AttributeError:
-                song_info.append("{}. {.webpage_url}".format(num, song))
-        msg += "\n***Musique suivante:***\n" + "\n".join(song_info)
+                song_info.append("**[{}]** {.webpage_url} ({})".format(num, song, str_duration))
 
-        await self.bot.say(msg)
+        if song_info:
+            msg += "\n***Chanson Suivante:***\n" + "\n".join(song_info)
+        em.description = msg.replace('None', '-')
+        more_songs = len(self.queue[server.id][QueueKey.QUEUE]) - 10
+        if more_songs > 0:
+            em.set_footer(text="Et {} autres...".format(more_songs))
+        await self.bot.say(embed=em)
+
+    def _draw_play(self, song, server):
+        song_start_time = song.song_start_time
+        total_time = datetime.timedelta(seconds=song.duration)
+        current_time = datetime.datetime.now()
+        elapsed_time = current_time - song_start_time
+        sections = 12
+        loc_time = round((elapsed_time/total_time) * sections)  # 10 sections
+
+        bar_char = '\N{BOX DRAWINGS HEAVY HORIZONTAL}'
+        seek_char = '\N{RADIO BUTTON}'
+        play_char = '\N{BLACK RIGHT-POINTING TRIANGLE}'
+
+        try:
+            if self.voice_client(server).audio_player.is_playing():
+                play_char = '\N{BLACK RIGHT-POINTING TRIANGLE}'
+            else:
+                play_char = '\N{DOUBLE VERTICAL BAR}'
+        except AttributeError:
+            pass
+
+        msg = "\n" + play_char + " "
+
+        for i in range(sections):
+            if i == loc_time:
+                msg += seek_char
+            else:
+                msg += bar_char
+
+        msg += " `{}`/`{}`".format(str(elapsed_time)[0:7],str(total_time))
+        return msg
 
     @commands.group(pass_context=True, no_pm=True)
     async def repeat(self, ctx):
@@ -1959,6 +2065,10 @@ class Audio:
                 song.view_count = None
             if not hasattr(song, 'uploader'):
                 song.uploader = None
+            if song.rating is None:
+                song.rating = 0
+            if song.thumbnail is None:
+                song.thumbnail = (self.bot.user.avatar_url).replace('webp', 'png')
             if hasattr(song, 'duration'):
                 m, s = divmod(song.duration, 60)
                 h, m = divmod(m, 60)
@@ -1968,14 +2078,21 @@ class Audio:
                     dur = "{0}:{1:0>2}".format(m, s)
             else:
                 dur = None
-            msg = ("\n**Titre:** {}\n**Auteur:** {}\n**Uploader:** {}\n"
-                   "**Vues:** {}\n**Durée:** {}\n\n<{}>".format(
-                       song.title, song.creator, song.uploader,
-                       song.view_count, dur, song.webpage_url))
-            await self.bot.say(msg.replace("**Auteur:** None\n", "")
-                                  .replace("**Vues:** None\n", "")
-                                  .replace("**Uploader:** None\n", "")
-                                  .replace("**Durée:** None\n", ""))
+            msg = ("**Auteur:** `{}`\n**Uploader:** `{}`\n"
+                    "**Durée:** `{}`\n**Note: **`{:.2f}`\n**Vues:** `{}`".format(
+                    song.creator, song.uploader, str(datetime.timedelta(seconds=song.duration)), song.rating,
+                    song.view_count))
+            msg += self._draw_play(song, server) + "\n"
+            colour = ''.join([choice('0123456789ABCDEF') for x in range(6)])
+            em = discord.Embed(description="", colour=int(colour, 16))
+            if 'http' not in song.webpage_url:
+                em.set_author(name=song.title)
+            else:
+                em.set_author(name=song.title, url=song.webpage_url)
+            em.set_thumbnail(url=song.thumbnail)
+            em.description = msg.replace('None', '-')
+
+            await self.bot.say("**En lecture:**", embed=em)
         else:
             await self.bot.say("Darude - Sandstorm.")
 
@@ -2065,10 +2182,13 @@ class Audio:
                 if stop_times[server] and \
                         int(time.time()) - stop_times[server] > 300:
                     # 5 min not playing to d/c
-                    log.debug("dcing from sid {} after 300s".format(server.id))
-                    self._clear_queue(server)
-                    await self._stop_and_disconnect(server)
-                    stop_times[server] = None
+                    timer_disconnect = self.get_server_settings(server)
+                    timer_disconnect = timer_disconnect.get("TIMER_DISCONNECT", True)
+                    if timer_disconnect:
+                        log.debug("dcing from sid {} after 300s".format(server.id))
+                        self._clear_queue(server)
+                        await self._stop_and_disconnect(server)
+                        stop_times[server] = None
             await asyncio.sleep(5)
 
     def get_server_settings(self, server):
@@ -2085,6 +2205,15 @@ class Audio:
         # have to be added
         if "NOPPL_DISCONNECT" not in ret:
             ret["NOPPL_DISCONNECT"] = True
+
+        if "NOTIFY" not in ret:
+            ret["NOTIFY"] = False
+ 
+        if "NOTIFY_CHANNEL" not in ret:
+            ret["NOTIFY_CHANNEL"] = None
+ 
+        if "TIMER_DISCONNECT" not in ret:
+            ret["TIMER_DISCONNECT"] = True
 
         for setting in self.server_specific_setting_keys:
             if setting not in ret:
@@ -2124,6 +2253,10 @@ class Audio:
         """Cette fonction suppose qu'il y a quelque chose dans la file d'attente
             à jouer"""
         server = self.bot.get_server(sid)
+        if self.get_server_settings(server)["NOTIFY"] is True:
+            notify_channel = self.settings["SERVERS"][server.id]["NOTIFY_CHANNEL"]
+        if self.get_server_settings(server)["NOTIFY"] is False:
+            notify_channel = None
         max_length = self.settings["MAX_LENGTH"]
 
         # This is a reference, or should be at least
@@ -2151,6 +2284,7 @@ class Audio:
                     url = queued_song.url
                     channel = queued_song.channel
                     song = await self._play(sid, url, channel)
+                    await self.display_now_playing(server, song, notify_channel)
                 except MaximumLength:
                     return
             elif len(queue) > 0:  # We're in the normal queue
@@ -2160,6 +2294,7 @@ class Audio:
                 log.debug("calling _play on the normal queue")
                 try:
                     song = await self._play(sid, url, channel)
+                    await self.display_now_playing(server, song, notify_channel)
                 except MaximumLength:
                     return
                 if repeat and last_song:
@@ -2202,6 +2337,47 @@ class Audio:
                               "erreur:\n'{}'".format(clean_url, str(e)))
                     message = escape(message, mass_mentions=True)
                     await self.bot.send_message(next_channel, message)
+
+    async def display_now_playing(self, server, song, notify_channel:int):
+        channel = discord.utils.get(server.channels, id=notify_channel)
+        if channel is None:
+            return
+        if song.title is None:
+            return
+        def to_delete(m):
+            if "En lecture" in m.content and m.author == self.bot.user:
+                return True
+            else:
+                return False
+        try:
+            await self.bot.purge_from(channel, limit=50, check=to_delete)
+        except discord.errors.Forbidden:
+            await self.bot.say("J'ai besoin d'autorisations pour gérer les messages dans ce canal.")
+
+        if song:
+            if not hasattr(song, 'creator'):
+                song.creator = None
+            if not hasattr(song, 'uploader'):
+                song.uploader = None
+            if song.rating is None:
+                song.rating = 0
+            if song.thumbnail is None:
+                song.thumbnail = (self.bot.user.avatar_url).replace('webp', 'png')
+
+        msg = ("**Auteur:** `{}`\n**Uploader:** `{}`\n"
+                "**Durée:** `{}`\n**Notation: **`{:.2f}`\n**Vues:** `{}`".format(
+                song.creator, song.uploader, str(datetime.timedelta(seconds=song.duration)), song.rating, song.view_count))
+
+        colour = ''.join([choice('0123456789ABCDEF') for x in range(6)])
+        em = discord.Embed(description="", colour=int(colour, 16))
+        if 'http' not in song.webpage_url:
+            em.set_author(name=song.title)
+        else:
+            em.set_author(name=song.title, url=song.webpage_url)
+        em.set_thumbnail(url=song.thumbnail)
+        em.description = msg.replace('None', '-')
+
+        await self.bot.send_message(channel, "**En lecture:**", embed=em)
 
     async def queue_scheduler(self):
         while self == self.bot.get_cog('Audio'):
