@@ -48,9 +48,9 @@ git clone https://github.com/kurtmckee/feedparser.git
 
 cd feedparser
 
-cd ..
-
 python3.6 setup.py install
+
+cd ..
 
 git clone https://git.launchpad.net/pytz
 
