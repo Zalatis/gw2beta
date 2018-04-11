@@ -58,6 +58,8 @@ cd pytz-2017.2
 
 python3.6 setup.py install
 
+service mongodb start
+
 python3.6 launcher.py
 
 
