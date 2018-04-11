@@ -28,7 +28,7 @@ class Spoiler:
 
     @commands.command(pass_context=True, no_pm=True)
     async def spoiler(self, ctx, *, text: str):
-        """Use an animated gif to hide spoiler text"""
+        """Utilise un gif animé pour cacher du texte"""
 
         message = ctx.message
         author = message.author.display_name
