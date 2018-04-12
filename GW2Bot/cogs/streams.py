@@ -156,7 +156,7 @@ class Streams:
                                                    _id=data[0]["_id"])
 
         if enabled:
-            await self.bot.say("Alerte activaté. Je vais notifié ce salon "
+            await self.bot.say("Alerte activé. Je vais notifié ce salon "
                                "quand {} sera en live.".format(stream))
         else:
             await self.bot.say("L'Alerte a été retiré de ce salon.")
@@ -186,7 +186,7 @@ class Streams:
                                                    channel)
 
         if enabled:
-            await self.bot.say("Alerte activaté. Je vais notifié ce salon "
+            await self.bot.say("Alerte activé. Je vais notifié ce salon "
                                "quand {} sera en live.".format(stream))
         else:
             await self.bot.say("L'Alerte a été retiré de ce salon.")
@@ -216,7 +216,7 @@ class Streams:
                                                    channel)
 
         if enabled:
-            await self.bot.say("Alerte activaté. Je vais notifié ce salon "
+            await self.bot.say("Alerte activé. Je vais notifié ce salon "
                                "quand {} sera en live.".format(stream))
         else:
             await self.bot.say("L'Alerte a été retiré de ce salon.")
@@ -246,7 +246,7 @@ class Streams:
                                                    channel)
 
         if enabled:
-            await self.bot.say("Alerte activaté. Je vais notifié ce salon "
+            await self.bot.say("Alerte activé. Je vais notifié ce salon "
                                "quand {} sera en live.".format(stream))
         else:
             await self.bot.say("L'Alerte a été retiré de ce salon.")
@@ -287,7 +287,7 @@ class Streams:
 
     @commands.group(pass_context=True)
     async def streamset(self, ctx):
-        """Stream settings"""
+        """Options stream"""
         if ctx.invoked_subcommand is None:
             await self.bot.send_cmd_help(ctx)
 
