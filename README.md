@@ -13,6 +13,8 @@ https://github.com/Sitryk/Sitryk-Cogs for genius cog
 
 https://github.com/Redjumpman/Jumper-Cogs/tree/master/cookie for cookie cog
 
+https://github.com/Eslyium/Eslyium-Cogs/tree/master/nsfw for NSFW cog
+
 # Donation
 
 https://paypal.me/zalati
