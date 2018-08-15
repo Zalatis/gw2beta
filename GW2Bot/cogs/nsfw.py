@@ -30,7 +30,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="highres").get("href")
-            await self.bot.say(image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -46,7 +46,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="highres").get("href")
-            await self.bot.say(image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -62,7 +62,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="highres").get("href")
-            await self.bot.say(image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -78,7 +78,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
-            await self.bot.say('http:' + image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -94,7 +94,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
-            await self.bot.say('http://danbooru.donmai.us' + image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -110,7 +110,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
-            await self.bot.say(image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -126,7 +126,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
-            await self.bot.say("http:" + image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -142,7 +142,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
-            await self.bot.say(image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -155,7 +155,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
-            await self.bot.say(image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -171,7 +171,7 @@ class Nsfw:
             page = await page.text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
-            await self.bot.say(image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
@@ -188,7 +188,7 @@ class Nsfw:
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
             image = image.replace(' ', '%20')
-            await self.bot.say(image)
+            await self.bot.say('Lien: ' + image)
         except Exception as e:
             await self.bot.say(":x: **Erreur:** `{}`".format(e))
 
