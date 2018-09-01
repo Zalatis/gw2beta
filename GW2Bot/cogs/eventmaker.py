@@ -32,18 +32,17 @@ pvp_activity = collections.OrderedDict()
 pvp_activity["Casual - PvP"] = "⚒"
 pvp_activity["Classé - PvP"] = "⚔"
 pvp_activity["Entraînement"] = "🥇"
+pvp_activity["McM - PvP"] = "🇲"
 pvp_activity["Autre - PvP"] = "🇦"
 
 pve_activity = collections.OrderedDict()
+pve_activity["Donjon"] = "🇩"     # D
 pve_activity["Raid"] = "🇷"       # R
 pve_activity["Missions"] = "🇲"   # M
-pve_activity["Donjon"] = "🇩"     # D
+pve_activity["Farm"] = "🇫"       # F
 pve_activity["Autre"] = "🇦"      # A
 
 # Define timezones
-eastern = pytz.timezone('US/Eastern')
-central = pytz.timezone('US/Central')
-mountain = pytz.timezone("US/Mountain")
 paris = pytz.timezone('Europe/Paris')
 
 lfg_messages = []
@@ -55,9 +54,9 @@ lfg_messages = []
 
 
 class EventMaker():
-    """Est un tool pour créer des évènements pour
+    """Est un tool pour créer des events pour
     des jeux en ligne et ainsi facilité les rappels
-    lors d'un évènement important en fonction des goûts de
+    lors d'un event important en fonction des goûts de
     chacun. Seuls les modos, admins et propriétaire du serveur
     en question peuvent en créer les rappels ce font de base
     dans le canal par défaut du serveur ainsi qu'en message
@@ -147,7 +146,7 @@ class EventMaker():
             return await self.games_menu(ctx, event_list, message=message,
                                          page=next_page, timeout=timeout)
         elif react == "join":
-            await self.bot.say("Vous avez rejoint l'évènement!")
+            await self.bot.say("Vous avez rejoint l'event!")
             test_server = ctx.message.server
             id_field = next(item for item in emb_dict['fields'] if item["name"] == "ID")
             curr_id = int(id_field['value'])
@@ -159,7 +158,7 @@ class EventMaker():
             return await\
                 self.bot.delete_message(message)
         elif react == "leave":
-            await self.bot.say("Vous avez quitté l'évènement.")
+            await self.bot.say("Vous avez quitté l'event.")
             test_server = ctx.message.server
             id_field = next(item for item in emb_dict['fields'] if item["name"] == "ID")
             curr_id = int(id_field['value'])
@@ -186,14 +185,13 @@ class EventMaker():
             message =\
                 await self.bot.send_message(channel, embed=emb)
             await self.bot.add_reaction(message, "⤴")
-            await self.bot.add_reaction(message, "❌")
             await self.bot.add_reaction(message, "⤵")
         else:
             message = await self.bot.edit_message(message, embed=emb)
         await asyncio.sleep(1)
         react = await self.bot.wait_for_reaction(
             message=message,
-            emoji=["❌", "⤴", "⤵"]
+            emoji=["⤴", "⤵"]
         )
         # if react is None:
         #     await self.bot.remove_reaction(message, "⤴", self.bot.user)
@@ -241,7 +239,7 @@ class EventMaker():
 
     @commands.command(pass_context=True)
     async def event_add(self, ctx):
-        """Planifie un évènement futur"""
+        """Planifie un event futur"""
         author = ctx.message.author
         server = ctx.message.server
         await self.bot.delete_message(ctx.message)
@@ -260,15 +258,15 @@ class EventMaker():
                 if role in allowed_roles:
                     break
             else:
-                await self.bot.say("Vous n'avez pas la permission de créer des évènements!")
+                await self.bot.say("Vous n'avez pas la permission de créer des events!")
                 return
 
         creation_time = dt.utcnow()
         creation_time = calendar.timegm(creation_time.utctimetuple())
         #################################
-        # Obtient le nom de l'évènement #
+        # Obtient le nom de l'event #
         #################################
-        bot_msg = await self.bot.say("Entrez un nom pour l'évènement: ")
+        bot_msg = await self.bot.say("Entrez un nom pour l'event: ")
         rsp_msg = await self.bot.wait_for_message(author=author, timeout=30)
         if rsp_msg is None:
             await self.bot.say("Aucun nom fourni!")
@@ -281,7 +279,7 @@ class EventMaker():
         ###########################
         # bot_msg = None
         # rsp_msg = None
-        bot_msg = await self.bot.say("Entrez une description pour l'évènement: ")
+        bot_msg = await self.bot.say("Entrez une description pour l'event: ")
         rsp_msg = await self.bot.wait_for_message(author=author, timeout=30)
         if rsp_msg is None:
             await self.bot.say("Aucune description fournie!")
@@ -298,7 +296,7 @@ class EventMaker():
         #############################################
         # bot_msg = None
         # rsp_msg = None
-        menu_str = "Sélectionne un type d'évènement"
+        menu_str = "Sélectionne un type d'event"
         #  react = self.select_menu(ctx, gametype, menu_str, timeout=30)
         emb = discord.Embed(title=menu_str,
                             color=discord.Colour(0xf1c40f))
@@ -316,7 +314,7 @@ class EventMaker():
             # for name in gametype:
             #     await self.bot.remove_reaction(bot_msg, gametype[name], self.bot.user)
             await self.bot.delete_message(bot_msg)
-            await self.bot.say("Aucun type d'évènement sélectionné!")
+            await self.bot.say("Aucun type d'event sélectionné!")
             return None
         reacts = {v: k for k, v in gametype.items()}
         activity_group = reacts[react.reaction.emoji]
@@ -356,7 +354,7 @@ class EventMaker():
         await self.bot.delete_message(bot_msg)
         await self.bot.say(activity_type)
         #############################################
-        # Obtient la date et l'heure de l'évènement #
+        # Obtient la date et l'heure de l'event #
         #############################################
         # bot_msg = None
         # rsp_msg = None
@@ -415,13 +413,13 @@ class EventMaker():
         # emb.add_field(name="Créé par",
         #               value=author.name)
         emb.set_footer(
-            text="Créé: " + dt.fromtimestamp(
+            text="Créé le: " + dt.fromtimestamp(
                 new_event["create_time"], paris).strftime("%d/%m/%Y %I:%M %p %Z ") +
                         "par " + author.name)
         emb.add_field(
             name="Activité: ", value=new_event["activity"])
         emb.add_field(
-            name="Date de début: ", value=dt.fromtimestamp(
+            name="Début de l'event: ", value=dt.fromtimestamp(
                 new_event["event_start_time"], paris).strftime("le %d/%m à %I:%M %p  "))
         emb.add_field(name="ID", value=str(new_event["id"]))
         await self.bot.say(embed=emb)
@@ -429,28 +427,28 @@ class EventMaker():
 
     @commands.command(pass_context=True)
     async def event_join(self, ctx, event_id: int):
-        """Rejoint l'évènement"""
+        """Rejoint l'event"""
         server = ctx.message.server
         for event in self.events[server.id]:
             if event["id"] == event_id:
                 if not event["has_started"]:
                     if ctx.message.author.id not in event["participants"]:
                         event["participants"].append(ctx.message.author.id)
-                        await self.bot.say("Vous vous êtes inscrit à l'évènement!")
+                        await self.bot.say("Vous vous êtes inscrit à l'event!")
                         dataIO.save_json(
                             os.path.join("data", "eventmaker", "events.json"),
                             self.events)
                     else:
-                        await self.bot.say("Vous avez déjà rejoint cet évènement!")
+                        await self.bot.say("Vous avez déjà rejoint cet event!")
                 else:
-                    await self.bot.say("Cet évènement a déjà commencé!")
+                    await self.bot.say("Cet event a déjà commencé!")
                 break
         else:
-            await self.bot.say("Il semblerait que cet évènement n'existe pas!" +
+            await self.bot.say("Il semblerait que cet event n'existe pas!" +
                                "Peut-être a-t-il été annulé ou jamais créé?")
 
     async def addplayer(self, ctx, user, event_id: int, channel):
-        """Ajoute un joueur à l'évènement donné"""
+        """Ajoute un joueur à l'event donné"""
         server = ctx.message.server
         for event in self.events[server.id]:
             if event["id"] == event_id:
@@ -458,26 +456,26 @@ class EventMaker():
                     if user.id not in event["participants"]:
                         event["participants"].append(user.id)
                         # await self.bot.say("Joined the event!")
-                        await self.bot.send_message(channel, "Membre ajouté à l'évènement!")
+                        await self.bot.send_message(channel, "Membre ajouté à l'event!")
                         dataIO.save_json(
                             os.path.join("data", "eventmaker", "events.json"),
                             self.events)
                     else:
-                        # await self.bot.say("Vous avez déjà rejoint cet évènement")
-                        await self.bot.send_message(channel, "Vous avez déjà rejoint cet évènement!")
+                        # await self.bot.say("Vous avez déjà rejoint cet event")
+                        await self.bot.send_message(channel, "Vous avez déjà rejoint cet event!")
                 else:
-                    # await self.bot.say("Cet évènement a déjà commencé!")
-                    await self.bot.send_message(channel, "Cet évènement a déjà commencé!")
+                    # await self.bot.say("Cet event a déjà commencé!")
+                    await self.bot.send_message(channel, "Cet event a déjà commencé!")
                 break
         else:
-            # await self.bot.say("Il semblerait que cet évènement n'existe pas!" +
+            # await self.bot.say("Il semblerait que cet event n'existe pas!" +
             #                    "Peut-être a-t-il été annulé ou jamais créé?")
-            await self.bot.send_message(channel, "Il semblerait que cet évènement n'existe pas!" +
+            await self.bot.send_message(channel, "Il semblerait que cet event n'existe pas!" +
                                         "Peut-être a-t-il été annulé ou jamais créé?")
 
     @commands.command(pass_context=True)
     async def event_leave(self, ctx, event_id: int):
-        """Quitte l'évènement spécifié"""
+        """Quitte l'event spécifié"""
         server = ctx.message.server
         author = ctx.message.author
         for event in self.events[server.id]:
@@ -485,56 +483,52 @@ class EventMaker():
                 if not event["has_started"]:
                     if author.id in event["participants"]:
                         event["participants"].remove(author.id)
-                        await self.bot.say("Vous avez quitté cet évènement!")
+                        await self.bot.say("Vous avez quitté cet event!")
                         dataIO.save_json(
                             os.path.join("data", "eventmaker", "events.json"),
                             self.events)
                     else:
                         await self.bot.say(
-                            "Vous n'êtes pas inscrit à cet évènement!")
+                            "Vous n'êtes pas inscrit à cet event!")
                 else:
-                    await self.bot.say("Cet évènement a déjà commencé!")
+                    await self.bot.say("Cet event a déjà commencé!")
                 break
 
     async def removeplayer(self, ctx, user, event_id: int, channel):
-        """Quitte l'évènement spécifié pour le joueur"""
+        """Quitte l'event spécifié pour le joueur"""
         server = ctx.message.server
         for event in self.events[server.id]:
             if event["id"] == event_id:
                 if not event["has_started"]:
                     if user.id in event["participants"]:
                         event["participants"].remove(user.id)
-                        # await self.bot.say("Vous avez été retiré de l'évènement!")
-                        await self.bot.send_message(channel, "Vous avez été retiré de l'évènement!")
+                        # await self.bot.say("Vous avez été retiré de l'event!")
+                        await self.bot.send_message(channel, "Vous avez été retiré de l'event!")
                         dataIO.save_json(
                             os.path.join("data", "eventmaker", "events.json"),
                             self.events)
                     else:
                         # await self.bot.say(
-                        #    "Vous n'êtes pas inscrit à cet évènement")
+                        #    "Vous n'êtes pas inscrit à cet event")
                         await self.bot.send_message(channel,
-                                                    "Vous n'êtes pas inscrit à cet évènement.")
+                                                    "Vous n'êtes pas inscrit à cet event.")
                 else:
-                    # await self.bot.say("Cet évènement a déjà commencé.")
-                    await self.bot.send_message(channel, "Cet évènement a déjà commencé.")
+                    # await self.bot.say("Cet event a déjà commencé.")
+                    await self.bot.send_message(channel, "Cet event a déjà commencé.")
                 break
         else:
             # await self.bot.say("It appears as if that event does not exist!" +
             #                    "Perhaps it was cancelled or never created?")
-            await self.bot.send_message(channel, "Il semblerait que cet évènement n'existe pas!" +
+            await self.bot.send_message(channel, "Il semblerait que cet event n'existe pas!" +
                                         "Peut-être a-t-il été annulé ou jamais créé?")
 
     @commands.command(pass_context=True)
     async def event_list(self, ctx, *, timezone: str="Europe/Paris"):
-        """Liste les évènements qui n'ont pas commencé"""
+        """Liste les events qui n'ont pas commencé"""
         server = ctx.message.server
         events = []
         for event in self.events[server.id]:
             if not event["has_started"]:
-                et_str = dt.fromtimestamp(
-                    event["create_time"], eastern).strftime("%I:%M %p %Z")
-                ct_str = dt.fromtimestamp(
-                    event["create_time"], central).strftime("%I:%M %p %Z")
                 pt_str = dt.fromtimestamp(
                     event["create_time"], paris).strftime("le %d/%m à %I:%M %p")
                 emb = discord.Embed(title=event["event_name"],
@@ -549,8 +543,11 @@ class EventMaker():
                 # emb.set_footer(
                 #     text="Créé le " + dt.fromtimestamp(
                 #         event["create_time"], paris).strftime("%d/%m/%Y %H:%M"))
+                emb.set_footer(
+                    text="Créé le: " + pt_str)
                 emb.add_field(
-                    name="Heure de début ", value=pt_str)
+                    name="Début de l'event: ", value=dt.fromtimestamp(
+                        event["event_start_time"], paris).strftime("le %d/%m à %I:%M %p  "))
                 emb.add_field(name="ID", value=str(event["id"]))
                 player_str = ""
                 for user in event["participants"]:
@@ -569,13 +566,13 @@ class EventMaker():
                 #         event["event_start_time"], paris).strftime("%d/%m/%Y %H:%M"))
                 events.append(emb)
         if len(events) == 0:
-            await self.bot.say("Aucun évènement disponible.")
+            await self.bot.say("Aucun event disponible.")
         else:
-            await self.games_menu(ctx, events, message=None, page=0, timeout=30)
+            await self.games_menu(ctx, events, page=0, timeout=30)
 
     @commands.command(pass_context=True)
     async def who(self, ctx, event_id: int):
-        """Liste tous les participants de l'évènement"""
+        """Liste tous les participants de l'event"""
         server = ctx.message.server
         for event in self.events[server.id]:
             if event["id"] == event_id:
@@ -591,19 +588,19 @@ class EventMaker():
 
     @commands.command(pass_context=True)
     async def event_cancel(self, ctx, event_id: int):
-        """Annule l'évènement spécifié"""
+        """Annule l'event spécifié"""
         server = ctx.message.server
         if event_id < self.settings[server.id]["next_id"]:
             to_remove =\
                 [event for event in self.events[server.id] if event["id"] == event_id]
             if len(to_remove) == 0:
-                await self.bot.say("Aucun évènement a annulé.")
+                await self.bot.say("Aucun event a annulé.")
             else:
                 self.events[server.id].remove(to_remove[0])
                 dataIO.save_json(
                     os.path.join("data", "eventmaker", "events.json"),
                     self.events)
-                await self.bot.say("Supprime l'événement spécifié!")
+                await self.bot.say("Évent supprimé")
         else:
             await self.bot.say("Je ne peux pas supprimer un événement qui " +
                                "n'a pas encore été créé!")
@@ -620,20 +617,14 @@ class EventMaker():
             # AM ou PM
             if ampm.lower() == "pm":
                 hour = int(hour) + 12
-            # Définir un fuseau horaire
+            # Définit un fuseau horaire
             tzone = tzone.lower()
             if re.match("france", tzone) is not None:
                 tzone = paris
-            elif re.match("e.*t", tzone) is not None:
-                tzone = eastern
-            elif re.match("c.*t", tzone) is not None:
-                tzone = central
-            elif re.match("m.*t", tzone) is not None:
-                tzone = mountain
             else:
                 raise ValueError('Fuseau horaire incorrect ou non pris en charge')
-            #  start_time = dt(2017, int(month), int(day), int(hour), int(minute), tzinfo=tzone)
-            start_time = dt(2017, int(month), int(day), int(hour), int(minute))
+            #  start_time = dt(2018, int(month), int(day), int(hour), int(minute), tzinfo=tzone)
+            start_time = dt(2018, int(month), int(day), int(hour), int(minute))
             start_time = tzone.localize(start_time)
             start_time = calendar.timegm(start_time.utctimetuple())
         except ValueError:
@@ -643,27 +634,27 @@ class EventMaker():
     @commands.group(pass_context=True)
     @checks.admin_or_permissions(manage_server=True)
     async def event_setup(self, ctx):
-        """Paramètres de l'évènement"""
+        """Paramètres de l'event"""
         if ctx.invoked_subcommand is None:
             await self.bot.send_cmd_help(ctx)
 
     @event_setup.command(pass_context=True, name="channel")
     @checks.admin_or_permissions(manage_server=True)
     async def game_set_channel(self, ctx, channel: discord.Channel):
-        """Définir le canal utilisé pour afficher des rappels."""
+        """Définit le canal utilisé pour afficher des rappels."""
         server = ctx.message.server
         self.settings[server.id]["channel"] = channel.id
         dataIO.save_json(os.path.join("data", "eventmaker", "settings.json"),
                          self.settings)
         await self.bot.say("Canal défini sur {}".format(channel.mention))
 
-    @event_setup.command(pass_context=True, name="lfg_channel")
+    @event_setup.command(pass_context=True, name="defaut_channel")
     @checks.admin_or_permissions(manage_server=True)
-    async def game_set_lfg_channel(self, ctx, channel: discord.Channel):
-        """Définir le canal d'affichage par défaut
+    async def game_set_defaut_channel(self, ctx, channel: discord.Channel):
+        """Définit le canal d'affichage par défaut
         Par défaut, le canal par défaut du serveur est utilisé"""
         server = ctx.message.server
-        self.settings[server.id]["lfg_channel"] = channel.id
+        self.settings[server.id]["defaut_channel"] = channel.id
         dataIO.save_json(os.path.join("data", "eventmaker", "settings.json"),
                          self.settings)
         await self.bot.say("Canal défini sur {}".format(channel.mention))
@@ -671,7 +662,7 @@ class EventMaker():
     @event_setup.command(pass_context=True, name="role")
     @checks.admin_or_permissions(manage_server=True)
     async def game_set_role(self, ctx, *, role: str=None):
-        """Définir le rôle nécessaire pour créer des évènements
+        """Définit le rôle nécessaire pour créer des events
         Par défaut tout le monde peut en créer"""
         server = ctx.message.server
         if role is not None:
@@ -689,7 +680,6 @@ class EventMaker():
             await self.bot.say("Rôle désactivé!")
 
     async def post_event(self, ctx, event, channel):
-        await self.bot.send_message(channel, "Voilà")
         emb = discord.Embed(title=event["event_name"],
                             description=event["description"],
                             color=discord.Colour(0x206694))
@@ -698,11 +688,12 @@ class EventMaker():
         pt_str = dt.fromtimestamp(
             event["create_time"], paris).strftime("le %d/%m à %I:%M %p")
         emb.add_field(
-            name="Date de début ", value=pt_str)
+            name="Début de l'event: ", value=dt.fromtimestamp(
+                event["event_start_time"], paris).strftime("le %d/%m à %I:%M %p  "))
         emb.set_footer(
             text="Créé le: " +
             dt.fromtimestamp(
-                event["create_time"], central).strftime(
+                event["create_time"], paris).strftime(
                     "%d/%m/%Y à %I:%M %p"))
         emb.add_field(name="ID", value=str(event["id"]))
         player_str = ""
@@ -721,12 +712,12 @@ class EventMaker():
         """ Liste les events dans un canal particulié """
         server = ctx.message.server
         # lfg_messages = []
-        if "lfg_channel" not in self.settings[server.id]:
+        if "defaut_channel" not in self.settings[server.id]:
             return await self.bot.say("Terminé")
         await self.bot.wait_until_ready()
         print (server)
         channel = discord.utils.get(self.bot.get_all_channels(),
-                                    id=self.settings[server.id]["lfg_channel"])
+                                    id=self.settings[server.id]["defaut_channel"])
         await self.bot.say("Terminé")
         asyncio.gather(*lfg_messages).cancel()
         await self.bot.purge_from(channel)
@@ -734,12 +725,12 @@ class EventMaker():
         for server in list(self.events.keys()):
             for event in self.events[server]:
                 if not event["has_started"]:
-                    # lfg_loop.create_task(await self.bot.say("C'est un évènement"))
-                    # lfg_message = self.bot.send_message(channel, "C'est un évènement")
+                    # lfg_loop.create_task(await self.bot.say("C'est un event"))
+                    # lfg_message = self.bot.send_message(channel, "C'est un event")
                     lfg_message = self.post_event(ctx, event, channel)
-                    # self.bot.loop.create_task(self.bot.send_message(channel, "C'est un évènement"))
+                    # self.bot.loop.create_task(self.bot.send_message(channel, "C'est un event"))
                     self.bot.loop.create_task(lfg_message)
-                    # lfg_message = lfg_loop.create_task(await self.bot.say("C'est un évènement"))
+                    # lfg_message = lfg_loop.create_task(await self.bot.say("C'est un event"))
                     lfg_messages.append(lfg_message)
 
     async def check_games(self):
@@ -768,7 +759,8 @@ class EventMaker():
                         pt_str = dt.fromtimestamp(
                             event["create_time"], paris).strftime("%I:%M %p %d/%m %Z")
                         emb.add_field(
-                            name="Date de début ", value=pt_str)
+                            name="Début de l'event: ", value=dt.fromtimestamp(
+                            event["event_start_time"], paris).strftime("le %d/%m à %I:%M %p  "))
                         emb.set_footer(
                             text="Créé le: " +
                             dt.fromtimestamp(
@@ -779,7 +771,7 @@ class EventMaker():
                         #     name="Compteur de participants", value=str(
                         #         len(event["participants"])))
                         player_str = ""
-                        player_mention_str = "@everyone - Un évènement commence! Participants: "
+                        player_mention_str = "Un event commence! Participants: "
                         for user in event["participants"]:
                             target = discord.utils.get(
                                 self.bot.get_all_members(), id=user)
@@ -788,8 +780,8 @@ class EventMaker():
                         # emb.add_field(
                         #     name="Compteur de participants", value=str(
                         #         len(event["participants"])))
-                        if player_mention_str == "Un évènement commence! Participants: ":
-                            player_mention_str = "L'évènement commence, mais aucun participants"
+                        if player_mention_str == "Un event commence! Participants: ":
+                            player_mention_str = "L'event commence, mais aucun participants"
                         if player_str == "":
                             player_str = "Pas de participants"
                         emb.add_field(
