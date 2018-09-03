@@ -32,7 +32,7 @@ pvp_activity = collections.OrderedDict()
 pvp_activity["Casual - PvP"] = "⚒"
 pvp_activity["Classé - PvP"] = "⚔"
 pvp_activity["Entraînement"] = "🥇"
-pvp_activity["McM - PvP"] = "🇲"
+pvp_activity["McM - PvP"] = "🌍"
 pvp_activity["Autre - PvP"] = "🇦"
 
 pve_activity = collections.OrderedDict()
@@ -206,7 +206,6 @@ class EventMaker():
         react = reacts[react.reaction.emoji]
         print(react_user)
         if react == "join":
-            await self.bot.send_message(channel, "Vous avez rejoint l'évent")
             await self.addplayer(ctx, react_user, curr_id, channel)
             emb.remove_field(3)  # Remove players
             player_name = react_user.name + " "
@@ -220,7 +219,6 @@ class EventMaker():
         #     return await\
         #         self.bot.delete_message(message)
         elif react == "leave":
-            await self.bot.send_message(channel, "Vous avez quitté l'évent")
             await self.removeplayer(ctx, react_user, curr_id, channel)
             emb.remove_field(3)  # Remove players
             player_name = react_user.name + " "
@@ -359,7 +357,7 @@ class EventMaker():
         # bot_msg = None
         # rsp_msg = None
         bot_msg = await self.bot.say(
-            "Entrez l'heure et la date (Format: HH:MM am/pm france MM/DD) ")
+            "Entrez l'heure et la date (Format: HH:MM le JJ/MM) ")
         rsp_msg = await self.bot.wait_for_message(author=author, timeout=45)
         if rsp_msg is None:
             await self.bot.delete_message(bot_msg)
@@ -414,13 +412,13 @@ class EventMaker():
         #               value=author.name)
         emb.set_footer(
             text="Créé le: " + dt.fromtimestamp(
-                new_event["create_time"], paris).strftime("%d/%m/%Y %I:%M %p %Z ") +
-                        "par " + author.name)
+                new_event["create_time"], paris).strftime("%d/%m/%Y %R") +
+                        " par " + author.name)
         emb.add_field(
             name="Activité: ", value=new_event["activity"])
         emb.add_field(
             name="Début de l'event: ", value=dt.fromtimestamp(
-                new_event["event_start_time"], paris).strftime("le %d/%m à %I:%M %p  "))
+                new_event["event_start_time"], paris).strftime("le %d/%m à %R"))
         emb.add_field(name="ID", value=str(new_event["id"]))
         await self.bot.say(embed=emb)
         await self.list_games(ctx)
@@ -456,7 +454,6 @@ class EventMaker():
                     if user.id not in event["participants"]:
                         event["participants"].append(user.id)
                         # await self.bot.say("Joined the event!")
-                        await self.bot.send_message(channel, "Membre ajouté à l'event!")
                         dataIO.save_json(
                             os.path.join("data", "eventmaker", "events.json"),
                             self.events)
@@ -530,7 +527,7 @@ class EventMaker():
         for event in self.events[server.id]:
             if not event["has_started"]:
                 pt_str = dt.fromtimestamp(
-                    event["create_time"], paris).strftime("le %d/%m à %I:%M %p")
+                    event["create_time"], paris).strftime("%d/%m à %R")
                 emb = discord.Embed(title=event["event_name"],
                                     description=event["description"],
                                     color=discord.Colour(0x206694))
@@ -542,12 +539,12 @@ class EventMaker():
                     name="Activité: ", value=event["activity"])
                 # emb.set_footer(
                 #     text="Créé le " + dt.fromtimestamp(
-                #         event["create_time"], paris).strftime("%d/%m/%Y %H:%M"))
+                #         event["create_time"], paris).strftime("%d/%m/%Y %R"))
                 emb.set_footer(
                     text="Créé le: " + pt_str)
                 emb.add_field(
                     name="Début de l'event: ", value=dt.fromtimestamp(
-                        event["event_start_time"], paris).strftime("le %d/%m à %I:%M %p  "))
+                        event["event_start_time"], paris).strftime("le %d/%m à %R"))
                 emb.add_field(name="ID", value=str(event["id"]))
                 player_str = ""
                 for user in event["participants"]:
@@ -563,7 +560,7 @@ class EventMaker():
                     name="Participants", value=player_str)
                 # emb.add_field(
                 #     name="Heure de début", value=dt.fromtimestamp(
-                #         event["event_start_time"], paris).strftime("%d/%m/%Y %H:%M"))
+                #         event["event_start_time"], paris).strftime("%d/%m/%Y %R"))
                 events.append(emb)
         if len(events) == 0:
             await self.bot.say("Aucun event disponible.")
@@ -600,7 +597,7 @@ class EventMaker():
                 dataIO.save_json(
                     os.path.join("data", "eventmaker", "events.json"),
                     self.events)
-                await self.bot.say("Évent supprimé")
+                await self.bot.say("Event supprimé")
         else:
             await self.bot.say("Je ne peux pas supprimer un événement qui " +
                                "n'a pas encore été créé!")
@@ -611,15 +608,12 @@ class EventMaker():
         content = msg.content
         # MET = timezone(timedelta(hours=+2))
         try:
-            t, ampm, tzone, d = content.split(" ")
+            t, tzone, d = content.split(" ")
             hour, minute = t.split(":")
-            month, day = d.split("/")
-            # AM ou PM
-            if ampm.lower() == "pm":
-                hour = int(hour) + 12
+            day, month = d.split("/")
             # Définit un fuseau horaire
             tzone = tzone.lower()
-            if re.match("france", tzone) is not None:
+            if re.match("le", tzone) is not None:
                 tzone = paris
             else:
                 raise ValueError('Fuseau horaire incorrect ou non pris en charge')
@@ -686,15 +680,15 @@ class EventMaker():
         emb.add_field(
             name="Activité: ", value=event["activity"])
         pt_str = dt.fromtimestamp(
-            event["create_time"], paris).strftime("le %d/%m à %I:%M %p")
+            event["create_time"], paris).strftime("le %d/%m à %R")
         emb.add_field(
             name="Début de l'event: ", value=dt.fromtimestamp(
-                event["event_start_time"], paris).strftime("le %d/%m à %I:%M %p  "))
+                event["event_start_time"], paris).strftime("le %d/%m à %R"))
         emb.set_footer(
             text="Créé le: " +
             dt.fromtimestamp(
                 event["create_time"], paris).strftime(
-                    "%d/%m/%Y à %I:%M %p"))
+                    "%d/%m/%Y à %R"))
         emb.add_field(name="ID", value=str(event["id"]))
         player_str = ""
         for user in event["participants"]:
@@ -757,15 +751,15 @@ class EventMaker():
                         emb.add_field(
                             name="Activité: ", value=event["activity"])
                         pt_str = dt.fromtimestamp(
-                            event["create_time"], paris).strftime("%I:%M %p %d/%m %Z")
+                            event["create_time"], paris).strftime("%R %d/%m")
                         emb.add_field(
                             name="Début de l'event: ", value=dt.fromtimestamp(
-                            event["event_start_time"], paris).strftime("le %d/%m à %I:%M %p  "))
+                            event["event_start_time"], paris).strftime("le %d/%m à %R"))
                         emb.set_footer(
                             text="Créé le: " +
                             dt.fromtimestamp(
                                 event["create_time"], paris).strftime(
-                                    "%d/%m/%Y à %I:%M %p"))
+                                    "%d/%m/%Y à %R"))
                         emb.add_field(name="ID", value=str(event["id"]))
                         # emb.add_field(
                         #     name="Compteur de participants", value=str(
