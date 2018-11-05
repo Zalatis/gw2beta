@@ -176,7 +176,7 @@ class GuildWars2:
 
     @commands.cooldown(1, 10, BucketType.user)
     @commands.command(pass_context=True)
-    async def account(self, ctx):
+    async def gwaccount(self, ctx):
         """Informations sur votre compte
         Nécessite une clé avec la permission `account`
         """
@@ -2458,7 +2458,7 @@ class GuildWars2:
             value = "Heure: {}\nWaypoint: {}".format(boss["time"], boss["waypoint"])
             data.add_field(name="{} dans {}".format(boss["name"], boss["diff"]), value=value, inline=False)
         data.set_author(name="World boss à venir")
-        data.set_footer(text="Les heures sont en GMT + 2 [Europe/Paris]")
+        data.set_footer(text="Les heures sont à Française")
         return data
 
 
