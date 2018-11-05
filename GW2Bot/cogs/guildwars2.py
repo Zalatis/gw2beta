@@ -2458,7 +2458,7 @@ class GuildWars2:
             value = "Heure: {}\nWaypoint: {}".format(boss["time"], boss["waypoint"])
             data.add_field(name="{} dans {}".format(boss["name"], boss["diff"]), value=value, inline=False)
         data.set_author(name="World boss à venir")
-        data.set_footer(text="Les heures sont à Française")
+        data.set_footer(text="Les heures sont à l'heure française")
         return data
 
 
