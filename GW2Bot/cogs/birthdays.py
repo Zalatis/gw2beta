@@ -129,7 +129,7 @@ class Birthdays:
         self.save_data()
         bdays = self.config["birthdays"]
         this_year = datetime.date.today().year
-        embed = discord.Embed(title="__**Liste des anniversaires**__", color=discord.Colour.lighter_grey())
+        embed = discord.Embed(title="__**Liste des anniversaires (pour l'année en cours)**__", color=discord.Colour.lighter_grey())
         for k, g in itertools.groupby(sorted(datetime.datetime.fromordinal(int(o)) for o in bdays.keys()),
                                       lambda i: i.month):
             # Sépare fondamentalement les jours avec "\n" et les gens le même jour avec ", "
