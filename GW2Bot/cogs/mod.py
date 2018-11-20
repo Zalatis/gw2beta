@@ -1117,7 +1117,7 @@ class Mod:
             await self.bot.say("Ce serveur n'est pas dans la l'ignorelist.")
 
     def count_ignored(self):
-        msg = "```Actuellement Ignorer :\n"
+        msg = "```Actuellement dans l'ignorelist :\n"
         msg += str(len(self.ignore_list["CHANNELS"])) + " salons\n"
         msg += str(len(self.ignore_list["SERVERS"])) + " serveurs\n```\n"
         return msg
