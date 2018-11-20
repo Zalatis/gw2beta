@@ -1039,56 +1039,56 @@ class Mod:
     @commands.group(pass_context=True, no_pm=True)
     @checks.admin_or_permissions(manage_channels=True)
     async def ignore(self, ctx):
-        """Adds servers/channels to ignorelist"""
+        """Ajoute des serveurs/salons à l'ignorelist"""
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
             await self.bot.say(self.count_ignored())
 
     @ignore.command(name="channel", pass_context=True)
     async def ignore_channel(self, ctx, channel: discord.Channel=None):
-        """Ignores channel
+        """Ignore le salon
 
-        Defaults to current one"""
+        Par défaut le salon actuel"""
         current_ch = ctx.message.channel
         if not channel:
             if current_ch.id not in self.ignore_list["CHANNELS"]:
                 self.ignore_list["CHANNELS"].append(current_ch.id)
                 dataIO.save_json("data/mod/ignorelist.json", self.ignore_list)
-                await self.bot.say("Channel added to ignore list.")
+                await self.bot.say("Salon ajouté à l'ignorelist.")
             else:
-                await self.bot.say("Channel already in ignore list.")
+                await self.bot.say("Salon déjà présent dans l'ignorelist.")
         else:
             if channel.id not in self.ignore_list["CHANNELS"]:
                 self.ignore_list["CHANNELS"].append(channel.id)
                 dataIO.save_json("data/mod/ignorelist.json", self.ignore_list)
-                await self.bot.say("Channel added to ignore list.")
+                await self.bot.say("Salon ajouté à l'ignorelist..")
             else:
-                await self.bot.say("Channel already in ignore list.")
+                await self.bot.say("Salon déjà présent dans l'ignorelist.")
 
     @ignore.command(name="server", pass_context=True)
     async def ignore_server(self, ctx):
-        """Ignores current server"""
+        """Ignore le serveur actuel"""
         server = ctx.message.server
         if server.id not in self.ignore_list["SERVERS"]:
             self.ignore_list["SERVERS"].append(server.id)
             dataIO.save_json("data/mod/ignorelist.json", self.ignore_list)
-            await self.bot.say("This server has been added to the ignore list.")
+            await self.bot.say("Ce serveur a été ajouté à l'ignorelist.")
         else:
-            await self.bot.say("This server is already being ignored.")
+            await self.bot.say("Ce serveur est déjà présent dans l'ignorelist.")
 
     @commands.group(pass_context=True, no_pm=True)
     @checks.admin_or_permissions(manage_channels=True)
     async def unignore(self, ctx):
-        """Removes servers/channels from ignorelist"""
+        """Retire des serveurs/canaux à l'ignorelist"""
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
             await self.bot.say(self.count_ignored())
 
     @unignore.command(name="channel", pass_context=True)
     async def unignore_channel(self, ctx, channel: discord.Channel=None):
-        """Removes channel from ignore list
+        """Retire un salon de l'ignorelist
 
-        Defaults to current one"""
+        Par défaut le salon actuel"""
         current_ch = ctx.message.channel
         if not channel:
             if current_ch.id in self.ignore_list["CHANNELS"]:
@@ -1112,14 +1112,14 @@ class Mod:
         if server.id in self.ignore_list["SERVERS"]:
             self.ignore_list["SERVERS"].remove(server.id)
             dataIO.save_json("data/mod/ignorelist.json", self.ignore_list)
-            await self.bot.say("This server has been removed from the ignore list.")
+            await self.bot.say("Ce serveur a été retiré de l'ignorelist.")
         else:
-            await self.bot.say("This server is not in the ignore list.")
+            await self.bot.say("Ce serveur n'est pas dans la l'ignorelist.")
 
     def count_ignored(self):
-        msg = "```Currently ignoring:\n"
-        msg += str(len(self.ignore_list["CHANNELS"])) + " channels\n"
-        msg += str(len(self.ignore_list["SERVERS"])) + " servers\n```\n"
+        msg = "```Actuellement Ignorer :\n"
+        msg += str(len(self.ignore_list["CHANNELS"])) + " salons\n"
+        msg += str(len(self.ignore_list["SERVERS"])) + " serveurs\n```\n"
         return msg
 
     @commands.group(name="filter", pass_context=True, no_pm=True)
