@@ -388,7 +388,7 @@ class Economy:
                 logger.info("{}({}) set {} credits to {} ({})"
                             "".format(author.name, author.id, credits.sum,
                                       user.name, user.id))
-                await self.bot.say("{}$ pour le compte de {}".format(
+                await self.bot.say("{} possède maintenant {}$".format(
                     user.name, credits.sum))
         except InsufficientBalance:
             await self.bot.say("L'utilisateur n'a pas assez d'argent.")
