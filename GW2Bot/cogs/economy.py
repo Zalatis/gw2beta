@@ -328,7 +328,7 @@ class Economy:
         if not user:
             user = ctx.message.author
             try:
-                await self.bot.say("{} vous avez: {} en banque".format(
+                await self.bot.say("{} vous avez: {}$ en banque".format(
                     user.mention, self.bank.get_balance(user)))
             except NoAccount:
                 await self.bot.say("{} Vous n'avez pas de compte "
