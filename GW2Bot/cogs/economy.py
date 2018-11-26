@@ -644,7 +644,7 @@ class Economy:
         """Modifier le temps entre chaque utilisation de slot"""
         server = ctx.message.server
         self.settings[server.id]["SLOT_TIME"] = seconds
-        await self.bot.say("Le délai est désormais de {} secondse.".format(seconds))
+        await self.bot.say("Le délai est désormais de {} secondes.".format(seconds))
         dataIO.save_json(self.file_path, self.settings)
 
     @economyset.command(pass_context=True)
