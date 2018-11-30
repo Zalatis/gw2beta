@@ -17,6 +17,8 @@ https://github.com/AznStevy/Maybe-Useful-Cogs/tree/master/leveler for leveler co
 
 https://github.com/NekoTony/Neko-Cogs/tree/master/botstats for botstats cog
 
+https://github.com/dain98/Zhonyas for league and champions cog
+
 # Donation
 
 https://paypal.me/zalati
