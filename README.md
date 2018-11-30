@@ -15,6 +15,8 @@ https://github.com/Redjumpman/Jumper-Cogs/tree/master/cookie for cookie cog
 
 https://github.com/AznStevy/Maybe-Useful-Cogs/tree/master/leveler for leveler cog
 
+https://github.com/NekoTony/Neko-Cogs/tree/master/botstats for botstats cog
+
 # Donation
 
 https://paypal.me/zalati
