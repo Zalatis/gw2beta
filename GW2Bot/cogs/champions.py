@@ -44,7 +44,10 @@ class Champions:
         cnl = ctx.message.channel
         championn = " ".join(champion_list)
         championn = " ".join(w.capitalize() for w in championn.split())
-        champion = championn.replace(" ","").replace("'", "")
+        champion = championn.replace("'", "").replace(".", "").replace(" ","").replace("Reksai","RekSai").replace("JarvanIv","JarvanIV")
+        # debug lines
+        # print (championn)
+        # print (champion)
         if champion == "Wukong":
             champion = "MonkeyKing"
         try:
