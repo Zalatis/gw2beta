@@ -44,7 +44,7 @@ class Champions:
         cnl = ctx.message.channel
         championn = " ".join(champion_list)
         championn = " ".join(w.capitalize() for w in championn.split())
-        champion = championn.replace("'", "").replace(".", "").replace(" ","").replace("Reksai","RekSai").replace("JarvanIv","JarvanIV")
+        champion = championn.replace("'", "").replace(".", "").replace(" ","").replace("Reksai","RekSai").replace("JarvanIv","JarvanIV").replace("Zoé","Zoe").replace("Kogmaw","KogMaw")
         # debug lines
         # print (championn)
         # print (champion)
