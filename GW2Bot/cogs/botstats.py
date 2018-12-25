@@ -46,7 +46,7 @@ class BotStats:
     @checks.is_owner()
     @botstats.command(pass_context=True)
     async def message(self, ctx, *, message):
-        """You can set the way your botstats is set!
+        """Configurer le message!
 
 
         {0} = Prefix du bot
